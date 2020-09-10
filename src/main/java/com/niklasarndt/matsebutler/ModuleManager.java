@@ -3,7 +3,6 @@ package com.niklasarndt.matsebutler;
 import com.niklasarndt.matsebutler.modules.ButlerCommand;
 import com.niklasarndt.matsebutler.modules.ButlerContext;
 import com.niklasarndt.matsebutler.modules.ButlerModule;
-import com.niklasarndt.matsebutler.modules.core.command.RedoCommand;
 import com.niklasarndt.matsebutler.util.ResultBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import org.reflections.Reflections;
@@ -121,7 +120,6 @@ public class ModuleManager {
                 }
             }
 
-            if (!(cmd instanceof RedoCommand)) this.mostRecentMessage = content;
             return context.resultBuilder();
         } else return ResultBuilder.NOT_FOUND;
     }
@@ -142,10 +140,6 @@ public class ModuleManager {
 
     public Optional<ButlerModule> getModule(String name) {
         return modules.stream().filter(m -> m.info().getName().equals(name)).findFirst();
-    }
-
-    public ResultBuilder redo() {
-        return execute(mostRecentMessage, null);
     }
 
     public String getMostRecentMessage() {

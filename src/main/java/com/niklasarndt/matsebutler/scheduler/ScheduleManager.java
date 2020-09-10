@@ -1,11 +1,6 @@
 package com.niklasarndt.matsebutler.scheduler;
 
 import com.niklasarndt.matsebutler.Butler;
-import com.niklasarndt.matsebutler.util.ButlerUtils;
-import com.niklasarndt.matsebutler.util.Emojis;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
@@ -67,6 +62,7 @@ public class ScheduleManager {
         return schedule(new ScheduledTask(index.incrementAndGet(), name, runnable, waitTimeInMs));
     }
 
+    /*
     public void scheduleMessage(String message, long waitTimeInMs) {
         schedule(MESSAGE_REMINDER_NAME, () -> {
             String duration = ButlerUtils.prettyPrintTime(waitTimeInMs);
@@ -86,7 +82,7 @@ public class ScheduleManager {
                     .queue();
         }, waitTimeInMs);
     }
-
+*/
     public void shutdown() {
         executorService.shutdown();
         try {

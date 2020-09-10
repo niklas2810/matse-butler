@@ -1,25 +1,19 @@
 package com.niklasarndt.matsebutler.listener;
 
 import com.niklasarndt.matsebutler.Butler;
-import com.niklasarndt.matsebutler.util.Emojis;
-import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent;
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionRemoveEvent;
 import net.dv8tion.jda.api.events.message.priv.react.PrivateMessageReactionAddEvent;
 import net.dv8tion.jda.api.events.message.priv.react.PrivateMessageReactionRemoveEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.requests.RestAction;
 import net.jodah.expiringmap.ExpirationPolicy;
 import net.jodah.expiringmap.ExpiringMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import javax.annotation.Nonnull;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -27,7 +21,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class ReactionListener extends ListenerAdapter {
 
-    private static final List<String> REACT_EMOJIS = List.of(Emojis.WASTEBASKET, Emojis.HOURGLASS);
+    private static final List<String> REACT_EMOJIS = List.of(/*Emojis.WASTEBASKET*/);
     private final Butler butler;
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -88,13 +82,14 @@ public class ReactionListener extends ListenerAdapter {
                         message -> {
                             logger.debug("Executing reaction processing");
 
-                            if (emoji.equals(Emojis.WASTEBASKET)) {
+                            /*if (emoji.equals(Emojis.WASTEBASKET)) {
                                 return performDeleteAction(channel, message);
                             } else if (emoji.equals(Emojis.HOURGLASS)) {
                                 return performSnoozeAction(message);
                             } else {
-                                throw new IllegalStateException("Unexpected value: " + emoji);
-                            }
+
+                            }*/
+                            throw new IllegalStateException("Unexpected value: " + emoji);
                         }).queue();
     }
 
@@ -110,7 +105,7 @@ public class ReactionListener extends ListenerAdapter {
             logger.debug("User removed reaction");
             return false;
         }
-
+/*
         if (emoji.equals(Emojis.HOURGLASS)) {
             if (message.getEmbeds().size() != 1) {
                 logger.debug("This message does not contain an embed.");
@@ -122,28 +117,12 @@ public class ReactionListener extends ListenerAdapter {
                 logger.debug("There is no reminder field in this embed.");
                 return false;
             }
-        }
+        }*/
         return true;
 
     }
+/*
 
-    private RestAction<Void> performSnoozeAction(Message message) {
-        Optional<MessageEmbed.Field> field = message.getEmbeds().get(0).getFields().stream()
-                .filter(item -> Objects.equals(item.getName(), "Your Reminder")).findFirst();
-
-        if (field.isEmpty()) return null;
-
-
-        //Schedule for five minutes from now
-        butler.getScheduleManager()
-                .scheduleMessage(field.get().getValue(), 300000);
-
-
-        message.suppressEmbeds(true).queue();
-        return message.editMessage("You'll be reminded again in 5 minutes.")
-                .delay(5, TimeUnit.SECONDS)
-                .flatMap(Message::delete);
-    }
 
     private RestAction<Void> performDeleteAction(MessageChannel channel, Message message) {
         if (channel instanceof GuildChannel) { //Try to delete original message
@@ -174,4 +153,5 @@ public class ReactionListener extends ListenerAdapter {
                     });
         } else return message.delete();
     }
+*/
 }

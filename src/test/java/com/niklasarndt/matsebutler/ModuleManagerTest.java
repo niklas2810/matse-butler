@@ -56,7 +56,6 @@ public class ModuleManagerTest extends ButlerTest {
         //Error checks
         assertEquals(ResultType.ERROR, instance.execute("fake 1 2", null).getType());
         assertEquals(ResultType.ERROR, instance.execute("fakemin", null).getType());
-        assertEquals(ResultType.ERROR, instance.execute("throw", null).getType());
         assertEquals(ResultType.NOT_FOUND, instance.execute("abc", null).getType());
     }
 
