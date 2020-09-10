@@ -1,6 +1,6 @@
 package com.niklasarndt.matsebutler;
 
-import com.niklasarndt.matsebutler.listener.ApiConnectedListener;
+import com.niklasarndt.matsebutler.listener.ApiListener;
 import com.niklasarndt.matsebutler.listener.MessageListener;
 import com.niklasarndt.matsebutler.listener.ReactionListener;
 import com.niklasarndt.matsebutler.scheduler.ScheduleManager;
@@ -146,7 +146,7 @@ public class Butler {
 
         builder.setActivity(Activity.of(Activity.ActivityType.WATCHING, "via direct messages"));
 
-        builder.addEventListeners(new ApiConnectedListener(this),
+        builder.addEventListeners(new ApiListener(this),
                 new MessageListener(this), new ReactionListener(this));
         builder.disableCache(CacheFlag.ACTIVITY, CacheFlag.VOICE_STATE,
                 CacheFlag.EMOTE, CacheFlag.CLIENT_STATUS);
