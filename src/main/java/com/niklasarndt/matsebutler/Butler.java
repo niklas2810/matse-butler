@@ -29,6 +29,7 @@ public class Butler {
     private final long startupTimestamp = System.currentTimeMillis();
     private final List<ExecutionFlags> flags;
     private long ownerId;
+    private long guildId;
     private JDA jda;
     private ModuleManager moduleManager;
     private ScheduleManager scheduleManager;
@@ -56,6 +57,7 @@ public class Butler {
             logger.warn("NO_API_CONNECTION: App will not be kept alive by daemon.");
         } else {
             loadOwnerId();
+            loadGuildId();
             jda = setUpJda();
             logger.info("JDA has been set up!");
         }
@@ -120,6 +122,16 @@ public class Butler {
         logger.info("Owner ID has been retrieved.");
     }
 
+    private void loadGuildId() {
+        try {
+            guildId = Long.parseLong(System.getenv("GUILD_ID"));
+        } catch (Exception e) {
+            throw new IllegalArgumentException(
+                    "You must provide the primary guild ID via GUILD_ID.");
+        }
+        logger.info("Guild ID has been retrieved.");
+    }
+
     /**
      * Sets up the JDA instance.
      *
@@ -131,7 +143,9 @@ public class Butler {
         final JDABuilder builder = JDABuilder.create(System.getenv("TOKEN_DISCORD"),
                 GatewayIntent.DIRECT_MESSAGES, GatewayIntent.DIRECT_MESSAGE_REACTIONS,
                 GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MESSAGE_REACTIONS);
+
         builder.setActivity(Activity.of(Activity.ActivityType.WATCHING, "via direct messages"));
+
         builder.addEventListeners(new ApiConnectedListener(this),
                 new MessageListener(this), new ReactionListener(this));
         builder.disableCache(CacheFlag.ACTIVITY, CacheFlag.VOICE_STATE,
@@ -145,6 +159,10 @@ public class Butler {
 
     public long getOwnerId() {
         return ownerId;
+    }
+
+    public long getGuildId() {
+        return guildId;
     }
 
     public long getStartupTimestamp() {

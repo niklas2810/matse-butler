@@ -42,6 +42,10 @@ public class MessageListener extends ListenerAdapter {
 
     @Override
     public void onGuildMessageReceived(@Nonnull GuildMessageReceivedEvent event) {
+        if (event.getGuild().getIdLong() != butler.getGuildId()) {
+            event.getGuild().leave().queue();
+            return;
+        }
         if (event.getChannel().getTopic() == null ||
                 !event.getChannel().getTopic().contains("allow-butler")) return;
         if (event.getAuthor().getIdLong() != butler.getOwnerId()) return;

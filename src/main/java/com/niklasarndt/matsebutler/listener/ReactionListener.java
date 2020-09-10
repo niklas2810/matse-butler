@@ -49,6 +49,7 @@ public class ReactionListener extends ListenerAdapter {
 
     @Override
     public void onGuildMessageReactionAdd(@Nonnull GuildMessageReactionAddEvent event) {
+        if (event.getGuild().getIdLong() != butler.getGuildId()) return;
         if (event.getChannel().getTopic() == null ||
                 !event.getChannel().getTopic().contains("allow-butler")) return;
         if (!passesFilter(event.getUserIdLong(), event.getReactionEmote().getEmoji())) return;
@@ -59,6 +60,7 @@ public class ReactionListener extends ListenerAdapter {
 
     @Override
     public void onGuildMessageReactionRemove(@Nonnull GuildMessageReactionRemoveEvent event) {
+        if (event.getGuild().getIdLong() != butler.getGuildId()) return;
         if (event.getChannel().getTopic() == null ||
                 !event.getChannel().getTopic().contains("allow-butler")) return;
         if (!passesFilter(event.getUserIdLong(), event.getReactionEmote().getEmoji())) return;
