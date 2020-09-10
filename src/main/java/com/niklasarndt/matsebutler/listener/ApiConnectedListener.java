@@ -25,5 +25,15 @@ public class ApiConnectedListener extends ListenerAdapter {
         logger.info("Connection to the Discord API is now established. Listening for events!");
         if (butler.hasFlag(ExecutionFlags.NO_MODULE_MANAGER))
             logger.warn("Module manager is disabled.");
+
+
+        if (event.getJDA().getGuildById(butler.getGuildId()) != null) {
+            event.getJDA().getGuilds().forEach(g -> {
+                if (g.getIdLong() != butler.getGuildId()) g.leave().queue();
+            });
+        } else {
+            logger.error("The guild you specified in the config via GUILD_ID does not exist");
+            System.exit(1);
+        }
     }
 }
