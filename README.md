@@ -1,18 +1,16 @@
 <div style="width:100%;padding:0px;margin:0px" align="center">
-    <img style="width: 80%;" src="https://raw.githubusercontent.com/niklas2810/my-discord-butler/main/res/social-inverted.svg" alt="Social Banner">
+    <img style="width: 80%;" src="https://raw.githubusercontent.com/niklas2810/matse-butler/main/res/social-inverted.svg" alt="Social Banner">
     <br>
-    <a href="https://codeclimate.com/github/niklas2810/my-discord-butler/maintainability">
-        <img alt="codeclimate maintainability" src="https://img.shields.io/codeclimate/maintainability/niklas2810/my-discord-butler?logo=Code%20Climate&style=for-the-badge"/></a>
-    <a href="https://codeclimate.com/github/niklas2810/my-discord-butler/test_coverage">
-        <img alt="codeclimate test coverage" src="https://img.shields.io/codeclimate/coverage/niklas2810/my-discord-butler?logo=Code%20Climate&style=for-the-badge"/></a>
-    <a href="https://codeclimate.com/github/niklas2810/my-discord-butler/issues">
-        <img alt="codeclimate issues" src="https://img.shields.io/codeclimate/issues/niklas2810/my-discord-butler?logo=Code%20Climate&style=for-the-badge"/>
+    <a href="https://codeclimate.com/github/niklas2810/matse-butler/maintainability">
+        <img alt="codeclimate maintainability" src="https://img.shields.io/codeclimate/maintainability/niklas2810/matse-butler?logo=Code%20Climate&style=for-the-badge"/></a>
+    <a href="https://codeclimate.com/github/niklas2810/matse-butler/issues">
+        <img alt="codeclimate issues" src="https://img.shields.io/codeclimate/issues/niklas2810/matse-butler?logo=Code%20Climate&style=for-the-badge"/>
     </a>    
     <br>
-    <a href="https://github.com/niklas2810/my-discord-butler/actions?query=workflow%3A%22Unit+Testing%22">
-    <img alt="unit testing" src="https://img.shields.io/github/workflow/status/niklas2810/my-discord-butler/Unit%20Testing?label=Unit%20Tests&style=for-the-badge"/></a>
-    <a href="https://hub.docker.com/r/niklas2810/my-discord-butler">
-        <img alt="docker build" src="https://img.shields.io/docker/cloud/build/niklas2810/my-discord-butler?style=for-the-badge"/></a>
+    <a href="https://github.com/niklas2810/matse-butler/actions?query=workflow%3A%22Unit+Testing%22">
+    <img alt="unit testing" src="https://img.shields.io/github/workflow/status/niklas2810/matse-butler/Unit%20Testing?logo=github&style=for-the-badge"/></a>
+    <a href="https://hub.docker.com/r/niklas2810/matse-butler">
+        <img alt="docker build" src="https://img.shields.io/github/workflow/status/niklas2810/matse-butler/Build%20using%20Docker?logo=docker&style=for-the-badge"/></a>
     <br>
     <br>   
 </div>
@@ -36,7 +34,7 @@ is quite straightforward:
 
 1. Create a `docker-compose.yml` file.
 2. Add the configuration which is necessary to start the container.
-You can find an example in [this repository](https://github.com/niklas2810/my-discord-butler/blob/main/docker-compose.yml).
+You can find an example in [this repository](https://github.com/niklas2810/matse-butler/blob/main/docker-compose.yml).
 3. Add the required environment variables. 
  
 Fill `OWNER_ID` with your Discord ID. You can find this one by right-clicking on your
