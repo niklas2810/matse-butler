@@ -1,0 +1,25 @@
+version: "2"
+plugins:
+  checkstyle:
+    enabled: true
+    checks:
+      com.puppycrawl.tools.checkstyle.checks.blocks.NeedBracesCheck:
+        enabled: false
+      # I prefer to have the + sign in the same line
+      com.puppycrawl.tools.checkstyle.checks.whitespace.OperatorWrapCheck:
+        enabled: false
+      com.puppycrawl.tools.checkstyle.checks.imports.CustomImportOrderCheck:
+        enabled: false
+      # Leaving out a summary is fine sometimes
+      com.puppycrawl.tools.checkstyle.checks.javadoc.SummaryJavadocCheck:
+        enabled: false
+      # <p> tag placement is not relevant
+      com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocParagraphCheck:
+        enabled: false
+  pmd:
+    enabled: true
+  sonar-java:
+    enabled: true
+    checks:
+      squid:UnusedPrivateMethod:
+        enabled: false

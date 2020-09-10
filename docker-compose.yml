@@ -1,0 +1,6 @@
+version: "3"
+services:
+  butler:
+    build: .
+    restart: on-failure
+    env_file: .env
