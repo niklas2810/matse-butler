@@ -6,9 +6,11 @@ on:
     branches:
       - main
     tags:
-      - v*
+      - 'v**'
     paths:
-      - src/*
+      - 'src/**'
+      - '**.xml'
+      - '**.yml'
 
 env:
   IMAGE_NAME: matse-butler
