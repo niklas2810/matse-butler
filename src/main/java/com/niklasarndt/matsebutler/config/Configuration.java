@@ -2,6 +2,7 @@ package com.niklasarndt.matsebutler.config;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Configuration {
@@ -20,10 +21,11 @@ public class Configuration {
     }
 
     public boolean isAdmin(long id) {
-        return admins.contains(id);
+        return admins != null && admins.contains(id);
     }
 
     public void addAdmin(long id) {
+        if (admins == null) admins = new ArrayList<>();
         admins.add(id);
     }
 
