@@ -12,6 +12,7 @@ import net.jodah.expiringmap.ExpirationPolicy;
 import net.jodah.expiringmap.ExpiringMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -49,7 +50,7 @@ public class ReactionListener extends ListenerAdapter {
 
     @Override
     public void onGuildMessageReactionAdd(@Nonnull GuildMessageReactionAddEvent event) {
-        if (event.getGuild().getIdLong() != butler.getGuildId()) return;
+        if (event.getGuild().getIdLong() != butler.getGuild()) return;
         if (event.getChannel().getTopic() == null ||
                 !event.getChannel().getTopic().contains("allow-butler")) return;
         if (!passesFilter(event.getUserIdLong(), event.getReactionEmote().getEmoji())) return;
@@ -60,7 +61,7 @@ public class ReactionListener extends ListenerAdapter {
 
     @Override
     public void onGuildMessageReactionRemove(@Nonnull GuildMessageReactionRemoveEvent event) {
-        if (event.getGuild().getIdLong() != butler.getGuildId()) return;
+        if (event.getGuild().getIdLong() != butler.getGuild()) return;
         if (event.getChannel().getTopic() == null ||
                 !event.getChannel().getTopic().contains("allow-butler")) return;
         if (!passesFilter(event.getUserIdLong(), event.getReactionEmote().getEmoji())) return;
@@ -69,7 +70,6 @@ public class ReactionListener extends ListenerAdapter {
     }
 
     private boolean passesFilter(long userIdLong, String emoji) {
-        if (userIdLong != butler.getOwnerId()) return false;
 
         boolean registered = REACT_EMOJIS.contains(emoji);
         logger.debug("Received emote: {} (Registered? {})", emoji, registered);

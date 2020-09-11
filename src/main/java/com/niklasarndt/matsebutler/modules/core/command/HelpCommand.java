@@ -6,6 +6,7 @@ import com.niklasarndt.matsebutler.modules.ButlerContext;
 import com.niklasarndt.matsebutler.modules.ButlerModule;
 import com.niklasarndt.matsebutler.util.ButlerUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -17,7 +18,7 @@ public class HelpCommand extends ButlerCommand {
     public HelpCommand() {
         super("help", 0, 1,
                 "Provides a command overview. Use \"help help\" for more details.",
-                "commands", "cmds");
+                false, "commands", "cmds");
     }
 
     @Override

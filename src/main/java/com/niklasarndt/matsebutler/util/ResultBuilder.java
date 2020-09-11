@@ -139,6 +139,16 @@ public class ResultBuilder {
         warn(String.format(output, args));
     }
 
+    public void unauthorized(String output) {
+        this.type = ResultType.UNAUTHORIZED;
+        this.output = output;
+    }
+
+
+    public void unauthorized(String output, Object... args) {
+        unauthorized(String.format(output, args));
+    }
+
     public void output(ResultBuilder other) {
         this.type = other.type;
         this.output = other.output;

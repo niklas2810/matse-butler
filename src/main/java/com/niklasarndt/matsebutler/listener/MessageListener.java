@@ -13,6 +13,7 @@ import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import javax.annotation.Nonnull;
 
 /**
@@ -29,8 +30,8 @@ public class MessageListener extends ListenerAdapter {
 
     @Override
     public void onPrivateMessageReceived(@Nonnull PrivateMessageReceivedEvent event) {
-        //This message was not sent by the bot owner.
-        if (event.getAuthor().getIdLong() != butler.getOwnerId()) return;
+        //This message was not sent by an administrator.
+        if (butler.isAdmin(event.getAuthor().getIdLong())) return;
 
         if (butler.hasFlag(ExecutionFlags.NO_MODULE_MANAGER)) {
             event.getMessage().addReaction(Emojis.LOCK).queue();
@@ -42,13 +43,13 @@ public class MessageListener extends ListenerAdapter {
 
     @Override
     public void onGuildMessageReceived(@Nonnull GuildMessageReceivedEvent event) {
-        if (event.getGuild().getIdLong() != butler.getGuildId()) {
+        if (event.getMessage().getAuthor().isBot()) return;
+        if (event.getGuild().getIdLong() != butler.getGuild()) {
             event.getGuild().leave().queue();
             return;
         }
         if (event.getChannel().getTopic() == null ||
                 !event.getChannel().getTopic().contains("allow-butler")) return;
-        if (event.getAuthor().getIdLong() != butler.getOwnerId()) return;
 
         if (butler.hasFlag(ExecutionFlags.NO_MODULE_MANAGER)) {
             event.getMessage().addReaction(Emojis.LOCK).queue();

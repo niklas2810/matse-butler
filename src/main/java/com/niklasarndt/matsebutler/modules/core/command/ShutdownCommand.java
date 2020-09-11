@@ -9,7 +9,8 @@ import com.niklasarndt.matsebutler.modules.ButlerContext;
 public class ShutdownCommand extends ButlerCommand {
 
     public ShutdownCommand() {
-        super("shutdown", "Closes the bot application.", "poweroff", "exit");
+        super("shutdown", "Closes the bot application.", true,
+                "poweroff", "exit");
     }
 
     @Override

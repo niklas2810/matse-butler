@@ -1,5 +1,7 @@
 package com.niklasarndt.matsebutler;
 
+import com.niklasarndt.matsebutler.config.Configuration;
+import com.niklasarndt.matsebutler.config.ConfigurationManager;
 import com.niklasarndt.matsebutler.listener.ApiListener;
 import com.niklasarndt.matsebutler.listener.MessageListener;
 import com.niklasarndt.matsebutler.listener.ReactionListener;
@@ -9,11 +11,11 @@ import com.niklasarndt.matsebutler.util.ExecutionFlags;
 import io.sentry.Sentry;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
-import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import javax.security.auth.login.LoginException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -28,11 +30,10 @@ public class Butler {
     private static final Logger logger = LoggerFactory.getLogger(Butler.class);
     private final long startupTimestamp = System.currentTimeMillis();
     private final List<ExecutionFlags> flags;
-    private long ownerId;
-    private long guildId;
     private JDA jda;
     private ModuleManager moduleManager;
     private ScheduleManager scheduleManager;
+    private ConfigurationManager configManager;
 
     protected Butler() throws LoginException {
         this(ExecutionFlags.NONE);
@@ -51,13 +52,12 @@ public class Butler {
     protected Butler(ExecutionFlags... flags) throws LoginException {
         logger.info("Startup is in progress");
         this.flags = Collections.unmodifiableList(List.of(flags));
+        this.configManager = new ConfigurationManager(this);
 
 
         if (hasFlag(ExecutionFlags.NO_API_CONNECTION)) {
             logger.warn("NO_API_CONNECTION: App will not be kept alive by daemon.");
         } else {
-            loadOwnerId();
-            loadGuildId();
             jda = setUpJda();
             logger.info("JDA has been set up!");
         }
@@ -112,39 +112,17 @@ public class Butler {
         return combined;
     }
 
-    private void loadOwnerId() {
-        try {
-            ownerId = Long.parseLong(System.getenv("OWNER_ID"));
-        } catch (Exception e) {
-            throw new IllegalArgumentException(
-                    "You must provide the owner's Discord ID via OWNER_ID.");
-        }
-        logger.info("Owner ID has been retrieved.");
-    }
-
-    private void loadGuildId() {
-        try {
-            guildId = Long.parseLong(System.getenv("GUILD_ID"));
-        } catch (Exception e) {
-            throw new IllegalArgumentException(
-                    "You must provide the primary guild ID via GUILD_ID.");
-        }
-        logger.info("Guild ID has been retrieved.");
-    }
-
     /**
      * Sets up the JDA instance.
      *
      * @return The completely initialized JDA instance.
-     *
      * @throws LoginException Will cause a shutdown + sentry log.
      */
     private JDA setUpJda() throws LoginException {
-        final JDABuilder builder = JDABuilder.create(System.getenv("TOKEN_DISCORD"),
+        final JDABuilder builder = JDABuilder.create(getToken(),
                 GatewayIntent.DIRECT_MESSAGES, GatewayIntent.DIRECT_MESSAGE_REACTIONS,
                 GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MESSAGE_REACTIONS);
 
-        builder.setActivity(Activity.of(Activity.ActivityType.WATCHING, "via direct messages"));
 
         builder.addEventListeners(new ApiListener(this),
                 new MessageListener(this), new ReactionListener(this));
@@ -157,14 +135,6 @@ public class Butler {
         return jda;
     }
 
-    public long getOwnerId() {
-        return ownerId;
-    }
-
-    public long getGuildId() {
-        return guildId;
-    }
-
     public long getStartupTimestamp() {
         return startupTimestamp;
     }
@@ -175,6 +145,26 @@ public class Butler {
 
     public ScheduleManager getScheduleManager() {
         return scheduleManager;
+    }
+
+    public ConfigurationManager getConfigManager() {
+        return configManager;
+    }
+
+    public Configuration getConfig() {
+        return configManager.getConfig();
+    }
+
+    public long getGuild() {
+        return getConfig().getGuild();
+    }
+
+    public String getToken() {
+        return getConfig().getToken();
+    }
+
+    public boolean isAdmin(long id) {
+        return getConfig().isAdmin(id);
     }
 
     public List<ExecutionFlags> getFlags() {

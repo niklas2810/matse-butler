@@ -1,9 +1,11 @@
 package com.niklasarndt.matsebutler;
 
 import com.niklasarndt.matsebutler.util.ExecutionFlags;
-import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
+
 import javax.security.auth.login.LoginException;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by Niklas on 2020/07/27.
@@ -25,7 +27,7 @@ class ButlerTest extends com.niklasarndt.testing.util.ButlerTest {
         assertTrue(instance.hasFlag(ExecutionFlags.NO_API_CONNECTION));
         assertEquals(1, instance.getFlags().size());
         assertNull(instance.getJda());
-        assertEquals(0, instance.getOwnerId());
+        assertFalse(instance.getConfig().isAdmin(0));
 
         long diff = instance.getStartupTimestamp() - time; //Butler instance should load in 50ms.
         logger.debug("DIFF: {}ms", diff);

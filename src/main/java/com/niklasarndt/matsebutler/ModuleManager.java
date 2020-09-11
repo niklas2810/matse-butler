@@ -8,12 +8,8 @@ import net.dv8tion.jda.api.entities.Message;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+
+import java.util.*;
 
 
 /**
@@ -110,6 +106,11 @@ public class ModuleManager {
 
                 context.resultBuilder().invalidArgsLength(
                         cmd.info().getArgsMin(), cmd.info().getArgsMax(), args.length);
+            } else if (origin != null
+                    && cmd.info().requiresPrivileges()
+                    && !instance.isAdmin(origin.getAuthor().getIdLong())) {
+
+                context.resultBuilder().unauthorized("You are not permitted to execute this command.");
             } else {
                 try {
                     cmd.execute(context);
