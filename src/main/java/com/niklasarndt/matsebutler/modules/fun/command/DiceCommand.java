@@ -3,6 +3,7 @@ package com.niklasarndt.matsebutler.modules.fun.command;
 import com.niklasarndt.matsebutler.modules.ButlerCommand;
 import com.niklasarndt.matsebutler.modules.ButlerContext;
 import com.niklasarndt.matsebutler.util.ButlerUtils;
+
 import java.security.SecureRandom;
 
 /**
@@ -13,7 +14,7 @@ public class DiceCommand extends ButlerCommand {
     public DiceCommand() {
         super("dice", 0, 1,
                 "Rolls a coin. 1-6 by default, use the first parameter to specify the face count.",
-                "roll");
+                false, "roll");
     }
 
     @Override

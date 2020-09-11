@@ -12,7 +12,7 @@ public class VersionCommand extends ButlerCommand {
 
     public VersionCommand() {
         super("version", 0, 0, "Displays some info about the current build.",
-                "about", "info");
+                false, "about", "info");
     }
 
     @Override

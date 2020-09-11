@@ -15,17 +15,21 @@ public class ButlerCommandInformation {
     private final int argsMin;
     private final int argsMax;
     private final String description;
+    private final boolean privileged;
 
     protected ButlerCommandInformation(String name, String description) {
-        this(name, 0, 0, description);
+        this(name, 0, 0,
+                description);
     }
 
-    protected ButlerCommandInformation(String name, int argsMin, int argsMax, String description) {
-        this(name, new String[0], argsMin, argsMax, description);
+    protected ButlerCommandInformation(String name, int argsMin, int argsMax,
+                                       String description) {
+        this(name, new String[0], argsMin, argsMax, description, false);
     }
 
     protected ButlerCommandInformation(String name, String[] aliases,
-                                       int argsMin, int argsMax, String description) {
+                                       int argsMin, int argsMax, String description,
+                                       boolean privileged) {
         Objects.requireNonNull(name);
 
         this.name = name;
@@ -33,6 +37,7 @@ public class ButlerCommandInformation {
         this.argsMin = argsMin;
         this.argsMax = argsMax;
         this.description = description != null ? description : "n/a";
+        this.privileged = privileged;
 
         applyLimits();
     }
@@ -78,6 +83,10 @@ public class ButlerCommandInformation {
 
     public String getDescription() {
         return description;
+    }
+
+    public boolean requiresPrivileges() {
+        return privileged;
     }
 
     public boolean hasAlias(String name) {

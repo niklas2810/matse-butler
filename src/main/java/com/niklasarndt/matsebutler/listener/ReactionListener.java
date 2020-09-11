@@ -12,6 +12,7 @@ import net.jodah.expiringmap.ExpirationPolicy;
 import net.jodah.expiringmap.ExpiringMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -35,7 +36,7 @@ public class ReactionListener extends ListenerAdapter {
 
     @Override
     public void onPrivateMessageReactionAdd(@Nonnull PrivateMessageReactionAddEvent event) {
-        if (!passesFilter(event.getUserIdLong(), event.getReactionEmote().getEmoji())) return;
+        if (!passesFilter(event.getReactionEmote().getEmoji())) return;
 
         scheduleReactionProcessing(event.getMessageIdLong(), event.getChannel(),
                 event.getReactionEmote().getEmoji());
@@ -43,16 +44,16 @@ public class ReactionListener extends ListenerAdapter {
 
     @Override
     public void onPrivateMessageReactionRemove(@Nonnull PrivateMessageReactionRemoveEvent event) {
-        if (!passesFilter(event.getUserIdLong(), event.getReactionEmote().getEmoji())) return;
+        if (!passesFilter(event.getReactionEmote().getEmoji())) return;
         removed.put(event.getMessageIdLong(), event.getReactionEmote().getEmoji());
     }
 
     @Override
     public void onGuildMessageReactionAdd(@Nonnull GuildMessageReactionAddEvent event) {
-        if (event.getGuild().getIdLong() != butler.getGuildId()) return;
+        if (event.getGuild().getIdLong() != butler.getGuild()) return;
         if (event.getChannel().getTopic() == null ||
                 !event.getChannel().getTopic().contains("allow-butler")) return;
-        if (!passesFilter(event.getUserIdLong(), event.getReactionEmote().getEmoji())) return;
+        if (!passesFilter(event.getReactionEmote().getEmoji())) return;
 
         scheduleReactionProcessing(event.getMessageIdLong(), event.getChannel(),
                 event.getReactionEmote().getEmoji());
@@ -60,16 +61,15 @@ public class ReactionListener extends ListenerAdapter {
 
     @Override
     public void onGuildMessageReactionRemove(@Nonnull GuildMessageReactionRemoveEvent event) {
-        if (event.getGuild().getIdLong() != butler.getGuildId()) return;
+        if (event.getGuild().getIdLong() != butler.getGuild()) return;
         if (event.getChannel().getTopic() == null ||
                 !event.getChannel().getTopic().contains("allow-butler")) return;
-        if (!passesFilter(event.getUserIdLong(), event.getReactionEmote().getEmoji())) return;
+        if (!passesFilter(event.getReactionEmote().getEmoji())) return;
 
         removed.put(event.getMessageIdLong(), event.getReactionEmote().getEmoji());
     }
 
-    private boolean passesFilter(long userIdLong, String emoji) {
-        if (userIdLong != butler.getOwnerId()) return false;
+    private boolean passesFilter(String emoji) {
 
         boolean registered = REACT_EMOJIS.contains(emoji);
         logger.debug("Received emote: {} (Registered? {})", emoji, registered);

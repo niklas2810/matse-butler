@@ -4,3 +4,4 @@ target
 .env
 *.cmd
 pages/coverage
+data

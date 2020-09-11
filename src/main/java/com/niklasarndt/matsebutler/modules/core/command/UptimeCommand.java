@@ -10,7 +10,7 @@ import com.niklasarndt.matsebutler.util.ButlerUtils;
 public class UptimeCommand extends ButlerCommand {
 
     public UptimeCommand() {
-        super("uptime", 0, 0, "Displays the uptime of the bot.");
+        super("uptime", 0, 0, "Displays the uptime of the bot.", false);
     }
 
     @Override

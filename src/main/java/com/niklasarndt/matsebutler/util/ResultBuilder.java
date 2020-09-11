@@ -95,7 +95,7 @@ public class ResultBuilder {
         } else action = channel.sendMessage(produceString());
 
         //Deletion hint
-        action.flatMap(message -> message.addReaction(Emojis.WASTEBASKET)).queue();
+        action.queue();
     }
 
     public void success(String output) {
@@ -137,6 +137,16 @@ public class ResultBuilder {
 
     public void warn(String output, Object... args) {
         warn(String.format(output, args));
+    }
+
+    public void unauthorized(String output) {
+        this.type = ResultType.UNAUTHORIZED;
+        this.output = output;
+    }
+
+
+    public void unauthorized(String output, Object... args) {
+        unauthorized(String.format(output, args));
     }
 
     public void output(ResultBuilder other) {

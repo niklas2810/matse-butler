@@ -2,8 +2,9 @@ package com.niklasarndt.matsebutler.modules;
 
 import com.niklasarndt.matsebutler.util.ButlerUtils;
 import com.niklasarndt.testing.util.ButlerTest;
-import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by Niklas on 2020/07/26.
@@ -11,7 +12,7 @@ import org.junit.jupiter.api.Test;
 class ButlerCommandInformationTest extends ButlerTest {
 
     private final ButlerCommandInformation shortInfo = new ButlerCommandInformation("abc",
-            new String[]{"xyz", "uvw", "opq"}, 0, 0, "def");
+            new String[]{"xyz", "uvw", "opq"}, 0, 0, "def", false);
 
     @Test
     void buildShortCommandInfo() {

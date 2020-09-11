@@ -10,7 +10,8 @@ public class RestartCommand extends ButlerCommand {
 
     public RestartCommand() {
         super("restart", "Closes the application with an error exit code. " +
-                "Docker might react with a restart of the container when configured accordingly.");
+                "Docker might react with a restart of the container " +
+                "when configured correctly.", true);
     }
 
     @Override

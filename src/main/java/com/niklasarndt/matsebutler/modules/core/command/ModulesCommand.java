@@ -6,6 +6,7 @@ import com.niklasarndt.matsebutler.modules.ButlerModule;
 import com.niklasarndt.matsebutler.modules.ButlerModuleInformation;
 import com.niklasarndt.matsebutler.util.ButlerUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
+
 import java.util.List;
 
 /**
@@ -15,7 +16,7 @@ public class ModulesCommand extends ButlerCommand {
 
     public ModulesCommand() {
         super("modules", 0, 1, "Provides a list of all modules.",
-                "module");
+                false, "module");
     }
 
     @Override

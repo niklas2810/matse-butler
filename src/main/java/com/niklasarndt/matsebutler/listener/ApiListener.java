@@ -2,11 +2,13 @@ package com.niklasarndt.matsebutler.listener;
 
 import com.niklasarndt.matsebutler.Butler;
 import com.niklasarndt.matsebutler.util.ExecutionFlags;
+import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import javax.annotation.Nonnull;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -30,14 +32,14 @@ public class ApiListener extends ListenerAdapter {
 
 
         AtomicInteger left = new AtomicInteger();
-        if (event.getJDA().getGuildById(butler.getGuildId()) != null) {
+        if (event.getJDA().getGuildById(butler.getGuild()) != null) {
             event.getJDA().getGuilds().forEach(g -> {
-                if (g.getIdLong() != butler.getGuildId()) {
+                if (g.getIdLong() != butler.getGuild()) {
                     g.leave().queue();
                     left.incrementAndGet();
-                }
+                } else event.getJDA().getPresence() //Set presence to the guild's name
+                        .setActivity(Activity.of(Activity.ActivityType.WATCHING, g.getName()));
             });
-
             logger.debug("Left {} guilds which were not the primary one.", left.get());
         } else {
             logger.error("The guild you specified in the config via GUILD_ID does not exist");
@@ -47,6 +49,6 @@ public class ApiListener extends ListenerAdapter {
 
     @Override
     public void onGuildJoin(@Nonnull GuildJoinEvent event) {
-        if (event.getGuild().getIdLong() != butler.getGuildId()) event.getGuild().leave().queue();
+        if (event.getGuild().getIdLong() != butler.getGuild()) event.getGuild().leave().queue();
     }
 }

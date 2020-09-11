@@ -18,16 +18,22 @@ public abstract class ButlerCommand {
     }
 
     public ButlerCommand(String name, String description, String... aliases) {
-        this(name, 0, 0, description, aliases);
+        this(name, description, false, aliases);
+    }
+
+    public ButlerCommand(String name, String description, boolean privileged, String... aliases) {
+        this(name, 0, 0, description, privileged, aliases);
     }
 
     public ButlerCommand(String name, int argsMin, int argsMax) {
-        this(name, argsMin, argsMax, null);
+        this(name, argsMin, argsMax,
+                null, false);
     }
 
     public ButlerCommand(String name, int argsMin, int argsMax,
-                         String description, String... aliases) {
-        this.info = new ButlerCommandInformation(name, aliases, argsMin, argsMax, description);
+                         String description, boolean privileged, String... aliases) {
+        this.info = new ButlerCommandInformation(name, aliases, argsMin, argsMax,
+                description, privileged);
     }
 
     public final ButlerCommandInformation info() {
