@@ -36,7 +36,7 @@ public class ReactionListener extends ListenerAdapter {
 
     @Override
     public void onPrivateMessageReactionAdd(@Nonnull PrivateMessageReactionAddEvent event) {
-        if (!passesFilter(event.getUserIdLong(), event.getReactionEmote().getEmoji())) return;
+        if (!passesFilter(event.getReactionEmote().getEmoji())) return;
 
         scheduleReactionProcessing(event.getMessageIdLong(), event.getChannel(),
                 event.getReactionEmote().getEmoji());
@@ -44,7 +44,7 @@ public class ReactionListener extends ListenerAdapter {
 
     @Override
     public void onPrivateMessageReactionRemove(@Nonnull PrivateMessageReactionRemoveEvent event) {
-        if (!passesFilter(event.getUserIdLong(), event.getReactionEmote().getEmoji())) return;
+        if (!passesFilter(event.getReactionEmote().getEmoji())) return;
         removed.put(event.getMessageIdLong(), event.getReactionEmote().getEmoji());
     }
 
@@ -53,7 +53,7 @@ public class ReactionListener extends ListenerAdapter {
         if (event.getGuild().getIdLong() != butler.getGuild()) return;
         if (event.getChannel().getTopic() == null ||
                 !event.getChannel().getTopic().contains("allow-butler")) return;
-        if (!passesFilter(event.getUserIdLong(), event.getReactionEmote().getEmoji())) return;
+        if (!passesFilter(event.getReactionEmote().getEmoji())) return;
 
         scheduleReactionProcessing(event.getMessageIdLong(), event.getChannel(),
                 event.getReactionEmote().getEmoji());
@@ -64,12 +64,12 @@ public class ReactionListener extends ListenerAdapter {
         if (event.getGuild().getIdLong() != butler.getGuild()) return;
         if (event.getChannel().getTopic() == null ||
                 !event.getChannel().getTopic().contains("allow-butler")) return;
-        if (!passesFilter(event.getUserIdLong(), event.getReactionEmote().getEmoji())) return;
+        if (!passesFilter(event.getReactionEmote().getEmoji())) return;
 
         removed.put(event.getMessageIdLong(), event.getReactionEmote().getEmoji());
     }
 
-    private boolean passesFilter(long userIdLong, String emoji) {
+    private boolean passesFilter(String emoji) {
 
         boolean registered = REACT_EMOJIS.contains(emoji);
         logger.debug("Received emote: {} (Registered? {})", emoji, registered);

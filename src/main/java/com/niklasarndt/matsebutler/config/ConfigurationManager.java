@@ -2,7 +2,6 @@ package com.niklasarndt.matsebutler.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import com.niklasarndt.matsebutler.Butler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,21 +10,19 @@ import java.io.IOException;
 
 public class ConfigurationManager {
 
-    private final File f;
-    private final Butler butler;
+    private final File file;
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private Configuration config;
 
-    public ConfigurationManager(Butler butler) {
-        this("data/config.yml", butler);
+    public ConfigurationManager() {
+        this("data/config.yml");
     }
 
-    public ConfigurationManager(String path, Butler butler) {
-        f = new File(path);
-        this.butler = butler;
+    public ConfigurationManager(String path) {
+        file = new File(path);
 
-        if (!f.exists()) {
-            logger.warn("Configuration file does not exist in {}!", f.getAbsolutePath());
+        if (!file.exists()) {
+            logger.warn("Configuration file does not exist in {}!", file.getAbsolutePath());
             config = new Configuration();
             return;
         }
@@ -33,7 +30,7 @@ public class ConfigurationManager {
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
 
         try {
-            this.config = mapper.readValue(f, Configuration.class);
+            this.config = mapper.readValue(file, Configuration.class);
         } catch (IOException e) {
             logger.error("Can not parse config file", e);
         }

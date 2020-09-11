@@ -18,15 +18,18 @@ public class ButlerCommandInformation {
     private final boolean privileged;
 
     protected ButlerCommandInformation(String name, String description) {
-        this(name, 0, 0, description);
+        this(name, 0, 0,
+                description);
     }
 
-    protected ButlerCommandInformation(String name, int argsMin, int argsMax, String description) {
+    protected ButlerCommandInformation(String name, int argsMin, int argsMax,
+                                       String description) {
         this(name, new String[0], argsMin, argsMax, description, false);
     }
 
     protected ButlerCommandInformation(String name, String[] aliases,
-                                       int argsMin, int argsMax, String description, boolean privileged) {
+                                       int argsMin, int argsMax, String description,
+                                       boolean privileged) {
         Objects.requireNonNull(name);
 
         this.name = name;

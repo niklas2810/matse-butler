@@ -110,7 +110,8 @@ public class ModuleManager {
                     && cmd.info().requiresPrivileges()
                     && !instance.isAdmin(origin.getAuthor().getIdLong())) {
 
-                context.resultBuilder().unauthorized("You are not permitted to execute this command.");
+                context.resultBuilder().unauthorized("You are not permitted " +
+                        "to execute this command.");
             } else {
                 try {
                     cmd.execute(context);

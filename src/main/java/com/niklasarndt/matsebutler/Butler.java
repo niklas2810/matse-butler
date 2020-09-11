@@ -52,7 +52,7 @@ public class Butler {
     protected Butler(ExecutionFlags... flags) throws LoginException {
         logger.info("Startup is in progress");
         this.flags = Collections.unmodifiableList(List.of(flags));
-        this.configManager = new ConfigurationManager(this);
+        this.configManager = new ConfigurationManager();
 
 
         if (hasFlag(ExecutionFlags.NO_API_CONNECTION)) {
