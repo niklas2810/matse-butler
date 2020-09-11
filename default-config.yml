@@ -1,0 +1,26 @@
+# Rename this file to config.yml! It serves as a template for your bot configuration.
+# In case you use docker, just go ahead and rename this file+fill in the values
+# and everything should work fine. If you are running it without docker, please
+# move the config file to the "data" subdirectory!
+
+
+# Create a bot account at https://discord.com/developers/applications.
+# Important: NOT only an app, but also a *bot*. You can find this button in the sidebar.
+# When created, there should be a "Token" field on the bot overview site. Click "copy"
+# and paste it in here!
+token: abc632_sioa1
+
+# The ID of your Guild. This is the *only* guild where the bot will be active.
+# Activate developer mode in the "Appearance" settings tab.
+# Then perform a right-click on the desired guild and select "Copy Id".
+guild: 123
+
+# All administrator/"privileged" accounts. These can
+# execute special commands, such as shutdown.
+# Activate developer mode in the "Appearance" settings tab.
+# Then click on all users who should receive admin rights and
+# select "Copy Id".
+admins:
+  - 456
+  - 789
+

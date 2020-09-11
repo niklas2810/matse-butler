@@ -1,6 +1,10 @@
+# Please rename  "default-config.yml" to "config.yml" and fill in the values!
+
 version: "3"
 services:
   butler:
     build: niklas2810/matse-butler
     restart: on-failure
-    env_file: .env
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./config.yml:/app/data/config.yml
