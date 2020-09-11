@@ -95,7 +95,7 @@ public class ResultBuilder {
         } else action = channel.sendMessage(produceString());
 
         //Deletion hint
-        action.flatMap(message -> message.addReaction(Emojis.WASTEBASKET)).queue();
+        action.queue();
     }
 
     public void success(String output) {
