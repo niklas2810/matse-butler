@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 
 
 public class TimetableEntry {
@@ -122,5 +123,27 @@ public class TimetableEntry {
 
     public boolean isLecture() {
         return isLecture.equals("1");
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof TimetableEntry)) return false;
+
+        TimetableEntry that = (TimetableEntry) o;
+
+        if (!title.equals(that.title)) return false;
+        if (!rawStart.equals(that.rawStart)) return false;
+        if (!rawEnd.equals(that.rawEnd)) return false;
+        return Objects.equals(information, that.information);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = title.hashCode();
+        result = 31 * result + rawStart.hashCode();
+        result = 31 * result + rawEnd.hashCode();
+        result = 31 * result + (information != null ? information.hashCode() : 0);
+        return result;
     }
 }

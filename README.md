@@ -8,9 +8,9 @@
     </a>    
     <br>
     <a href="https://github.com/niklas2810/matse-butler/actions?query=workflow%3A%22Unit+Testing%22">
-    <img alt="unit testing" src="https://img.shields.io/github/workflow/status/niklas2810/matse-butler/Unit%20Testing?logo=github&style=for-the-badge"/></a>
+    <img alt="unit testing" src="https://img.shields.io/github/workflow/status/niklas2810/matse-butler/Unit%20Testing/develop?label=Dev%20Build&logo=github&style=for-the-badge"/></a>
     <a href="https://hub.docker.com/r/niklas2810/matse-butler">
-        <img alt="docker build" src="https://img.shields.io/github/workflow/status/niklas2810/matse-butler/Build%20using%20Docker?logo=docker&style=for-the-badge"/></a>
+        <img alt="docker build" src="https://img.shields.io/github/workflow/status/niklas2810/matse-butler/Build%20using%20Docker/main?label=Docker%20Build&logo=docker&style=for-the-badge"/></a>
     <br>
     <br>   
 </div>

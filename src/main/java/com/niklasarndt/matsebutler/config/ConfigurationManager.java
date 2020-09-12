@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.io.IOException;
 
@@ -21,6 +20,12 @@ public class ConfigurationManager {
     public ConfigurationManager(String path) {
         file = new File(path);
 
+        reload();
+    }
+
+    public void reload() {
+        logger.info("Reloading configuration");
+
         if (!file.exists()) {
             logger.warn("Configuration file does not exist in {}!", file.getAbsolutePath());
             config = new Configuration();
@@ -36,6 +41,7 @@ public class ConfigurationManager {
         }
 
         logger.info("There are {} administrators registered.", config.getAdmins().size());
+
     }
 
     public Configuration getConfig() {

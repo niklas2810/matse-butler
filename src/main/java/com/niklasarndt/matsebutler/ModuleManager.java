@@ -61,7 +61,7 @@ public class ModuleManager {
                     "claiming the name \"%s\".", module.info().getName()));
         }
         modules.add(module);
-        module.onStartup();
+        module.onStartup(instance);
     }
 
     public void unregisterModule(String name) {

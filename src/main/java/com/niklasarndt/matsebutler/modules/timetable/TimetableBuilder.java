@@ -1,10 +1,11 @@
 package com.niklasarndt.matsebutler.modules.timetable;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.niklasarndt.matsebutler.modules.ButlerContext;
+import com.niklasarndt.matsebutler.Butler;
 import com.niklasarndt.matsebutler.modules.timetable.model.TimetableEntry;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.internal.utils.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.io.IOException;
@@ -24,12 +25,8 @@ public class TimetableBuilder {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    public List<EmbedBuilder> buildTimetableForToday(ButlerContext context) {
-        LocalDate d = DateUtils.getCurrentDay();
-        return buildTimetable(context, d, d);
-    }
-
-    public List<EmbedBuilder> buildTimetable(ButlerContext context, LocalDate start, LocalDate end) {
+    public Pair<Integer, List<EmbedBuilder>> buildTimetable(Butler butler, LocalDate start,
+                                                            LocalDate end, int currentHash) {
         ObjectMapper mapper = new ObjectMapper();
         List<TimetableEntry> list = new ArrayList<>();
 
@@ -41,6 +38,22 @@ public class TimetableBuilder {
         }
 
         list.sort(Comparator.comparing(TimetableEntry::getStartParsed)); //Sort entries by start time
+
+        if (list.hashCode() == currentHash) {
+            return new Pair<>() {
+                @Override
+                public Integer getLeft() {
+                    return currentHash;
+                }
+
+                @Override
+                public List<EmbedBuilder> getRight() {
+                    return null;
+                }
+            };
+        }
+
+
         List<EmbedBuilder> embeds = new ArrayList<>();
 
         start.datesUntil(end.plusDays(1)).forEach(day -> { //Build embeds
@@ -55,8 +68,18 @@ public class TimetableBuilder {
             }
         });
 
-        addFooter(embeds, context.instance().getJda().getSelfUser().getAvatarUrl());
-        return embeds;
+        addFooter(embeds, butler != null ? butler.getJda().getSelfUser().getAvatarUrl() : null);
+        return new Pair<>() {
+            @Override
+            public Integer getLeft() {
+                return list.hashCode();
+            }
+
+            @Override
+            public List<EmbedBuilder> getRight() {
+                return embeds;
+            }
+        };
     }
 
     private void addFooter(List<EmbedBuilder> embeds, String iconUrl) {

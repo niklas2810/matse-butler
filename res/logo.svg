@@ -1,12 +1,12 @@
 <svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300">
     <path fill="#fff" fill-opacity="1.0" d="M0 0h300v300H0z"/>
-    <path d="M102 32l48 22 47-22v43l-47-21-48 21V32z" fill="#000"/>
-    <g clip-path="url(#clip0)" fill="#000">
+    <path d="M102 32l48 22 47-22v43l-47-21-48 21V32z" fill="#1369AB"/>
+    <g clip-path="url(#clip0)" fill="#1369AB">
         <circle cx="150" cy="161.4" r="8"/>
         <circle cx="150" cy="126.2" r="8"/>
         <circle cx="150" cy="91" r="8"/>
     </g>
-    <path d="M0 0l150 245L300 0v300H0V0z" fill="#000"/>
+    <path d="M0 0l150 245L300 0v300H0V0z" fill="#1369AB"/>
     <defs>
         <clipPath id="clip0">
             <path fill="#fff" fill-opacity="1.0" transform="translate(142 83)" d="M0 0h16v86H0z"/>
