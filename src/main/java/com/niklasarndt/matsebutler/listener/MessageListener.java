@@ -30,7 +30,7 @@ public class MessageListener extends ListenerAdapter {
     @Override
     public void onPrivateMessageReceived(@Nonnull PrivateMessageReceivedEvent event) {
         //This message was not sent by an administrator.
-        if (butler.isAdmin(event.getAuthor().getIdLong())) return;
+        if (!butler.isAdmin(event.getAuthor().getIdLong())) return;
 
         if (butler.hasFlag(ExecutionFlags.NO_MODULE_MANAGER)) {
             event.getMessage().addReaction(Emojis.LOCK).queue();
