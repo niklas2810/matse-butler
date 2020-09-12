@@ -3,7 +3,7 @@
 version: "3"
 services:
   butler:
-    build: niklas2810/matse-butler
+    image: niklas2810/matse-butler
     restart: on-failure
     volumes:
       - /etc/localtime:/etc/localtime:ro
