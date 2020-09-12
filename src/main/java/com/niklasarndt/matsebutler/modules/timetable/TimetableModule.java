@@ -9,6 +9,7 @@ import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.internal.utils.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -149,6 +150,25 @@ public class TimetableModule extends ButlerModule {
 
             MessageChannel out = (MessageChannel) ch.get();
             clearChannel(out);
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            String role = "";
+            if (butler.getConfig().getRoleName() != null) {
+                List<Role> roles = g.getRolesByName(butler.getConfig().getRoleName(),
+                        false);
+                if (roles.size() == 0) {
+                    logger.error("Could not find role {}.", butler.getConfig().getRoleName());
+                } else {
+                    role = roles.get(0).getAsMention();
+
+                }
+            }
+
+            out.sendMessage("Here are the latest updates! " + role).queue();
             res.getRight().forEach(embed ->
                     out.sendMessage(embed.build()).queue());
             logger.info("Sending {} messages.", res.getRight().size());
