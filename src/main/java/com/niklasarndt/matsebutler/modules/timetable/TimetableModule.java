@@ -15,16 +15,22 @@ import org.slf4j.LoggerFactory;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class TimetableModule extends ButlerModule {
 
     private static TimetableModule instance;
+
     private final AtomicLong lastExecution = new AtomicLong();
     private final AtomicLong lastThreadStartup = new AtomicLong();
+    private final AtomicInteger dailyHashCode = new AtomicInteger();
+    private final AtomicInteger weeklyHashCode = new AtomicInteger();
+
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final TimetableBuilder builder = new TimetableBuilder();
     private Thread executorThread;
+
 
     public TimetableModule() {
         super(Emojis.HOURGLASS, "timetable", "Stundenplan",
@@ -90,43 +96,53 @@ public class TimetableModule extends ButlerModule {
     public void updateChannels(Guild guild, ResultBuilder result,
                                boolean daily, boolean weekly, boolean ignoreCache) {
         if (daily) {
-            logger.info("Producing daily timetable");
-            Optional<GuildChannel> dailyChannel =
-                    retrieveChannel(guild, butler.getConfig().getDailyChannel());
+            logger.info("Generating daily timetable");
 
-            if (dailyChannel.isEmpty()) {
-                result.error("The channel '%s' does not exist.",
-                        butler.getConfig().getDailyChannel());
-                return;
-            }
-
-            MessageChannel out = (MessageChannel) dailyChannel.get();
-            clearChannel(out);
-            List<EmbedBuilder> embeds = builder.buildTimetableForToday(butler);
-            embeds.forEach(embed ->
-                    out.sendMessage(embed.build()).queue());
-            logger.info("Sending {} messages.", embeds.size());
+            LocalDate today = DateUtils.getCurrentDay();
+            buildEmbeds(ignoreCache, dailyHashCode,
+                    today, today,
+                    guild, butler.getConfig().getDailyChannel(),
+                    result);
         }
 
         if (weekly) {
             logger.info("Producing weekly timetable");
-            Optional<GuildChannel> weeklyChannel =
-                    retrieveChannel(guild, butler.getConfig().getWeeklyChannel());
 
-            if (weeklyChannel.isEmpty()) {
+            Pair<LocalDate, LocalDate> week = DateUtils.getCurrentWeek();
+            buildEmbeds(ignoreCache, weeklyHashCode,
+                    week.getLeft(), week.getRight(),
+                    guild, butler.getConfig().getWeeklyChannel(),
+                    result);
+        }
+    }
+
+    private void buildEmbeds(boolean ignoreCache, AtomicInteger hash,
+                             LocalDate start, LocalDate end,
+                             Guild g, String channelName,
+                             ResultBuilder result) {
+        Pair<Integer, List<EmbedBuilder>> res = builder.buildTimetable(butler,
+                start, end, ignoreCache ? 0 : hash.get());
+
+        if (!ignoreCache && res.getLeft() == hash.get()) {
+            logger.debug("Hash code remains the same for {}, skipping update", channelName);
+        } else {
+            hash.set(res.getLeft());
+            logger.info("{}'s Hash is now {}", channelName, res.getLeft());
+
+            Optional<GuildChannel> ch =
+                    retrieveChannel(g, channelName);
+
+            if (ch.isEmpty()) {
                 result.error("The channel '%s' does not exist.",
-                        butler.getConfig().getDailyChannel());
+                        channelName);
                 return;
             }
 
-            MessageChannel out = (MessageChannel) weeklyChannel.get();
+            MessageChannel out = (MessageChannel) ch.get();
             clearChannel(out);
-            Pair<LocalDate, LocalDate> week = DateUtils.getCurrentWeek();
-            List<EmbedBuilder> embeds = builder.buildTimetable(butler,
-                    week.getLeft(), week.getRight());
-            embeds.forEach(embed ->
+            res.getRight().forEach(embed ->
                     out.sendMessage(embed.build()).queue());
-            logger.info("Sending {} messages.", embeds.size());
+            logger.info("Sending {} messages.", res.getRight().size());
         }
     }
 

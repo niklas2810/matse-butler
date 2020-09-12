@@ -5,6 +5,7 @@ import com.niklasarndt.matsebutler.Butler;
 import com.niklasarndt.matsebutler.modules.timetable.model.TimetableEntry;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.internal.utils.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.io.IOException;
@@ -24,12 +25,8 @@ public class TimetableBuilder {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    public List<EmbedBuilder> buildTimetableForToday(Butler butler) {
-        LocalDate d = DateUtils.getCurrentDay();
-        return buildTimetable(butler, d, d);
-    }
-
-    public List<EmbedBuilder> buildTimetable(Butler butler, LocalDate start, LocalDate end) {
+    public Pair<Integer, List<EmbedBuilder>> buildTimetable(Butler butler, LocalDate start,
+                                                            LocalDate end, int currentHash) {
         ObjectMapper mapper = new ObjectMapper();
         List<TimetableEntry> list = new ArrayList<>();
 
@@ -41,6 +38,23 @@ public class TimetableBuilder {
         }
 
         list.sort(Comparator.comparing(TimetableEntry::getStartParsed)); //Sort entries by start time
+
+        if (list.hashCode() == currentHash) {
+            logger.debug("Hash code is still {}, skipping build", currentHash);
+            return new Pair<>() {
+                @Override
+                public Integer getLeft() {
+                    return currentHash;
+                }
+
+                @Override
+                public List<EmbedBuilder> getRight() {
+                    return null;
+                }
+            };
+        }
+
+
         List<EmbedBuilder> embeds = new ArrayList<>();
 
         start.datesUntil(end.plusDays(1)).forEach(day -> { //Build embeds
@@ -56,7 +70,17 @@ public class TimetableBuilder {
         });
 
         addFooter(embeds, butler != null ? butler.getJda().getSelfUser().getAvatarUrl() : null);
-        return embeds;
+        return new Pair<>() {
+            @Override
+            public Integer getLeft() {
+                return list.hashCode();
+            }
+
+            @Override
+            public List<EmbedBuilder> getRight() {
+                return embeds;
+            }
+        };
     }
 
     private void addFooter(List<EmbedBuilder> embeds, String iconUrl) {
