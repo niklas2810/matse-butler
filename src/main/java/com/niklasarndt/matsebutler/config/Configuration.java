@@ -15,11 +15,17 @@ public class Configuration {
     @JsonProperty
     private String token;
 
-    @JsonProperty(value = "daily")
+    @JsonProperty("daily")
     private String dailyChannel;
 
-    @JsonProperty(value = "weekly")
+    @JsonProperty("weekly")
     private String weeklyChannel;
+
+    @JsonProperty
+    private String activator;
+
+    @JsonProperty("sleep-duration")
+    private Long sleepDuration;
 
     public List<Long> getAdmins() {
         return admins;
@@ -48,5 +54,13 @@ public class Configuration {
 
     public String getWeeklyChannel() {
         return weeklyChannel == null ? "stundenplan-woche" : weeklyChannel;
+    }
+
+    public String getActivator() {
+        return activator == null ? "allow-butler" : activator;
+    }
+
+    public long getSleepDuration() {
+        return sleepDuration != null ? sleepDuration * 60000 : 5 * 60000;
     }
 }

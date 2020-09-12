@@ -13,7 +13,6 @@ import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import javax.annotation.Nonnull;
 
 /**
@@ -49,7 +48,7 @@ public class MessageListener extends ListenerAdapter {
             return;
         }
         if (event.getChannel().getTopic() == null ||
-                !event.getChannel().getTopic().contains("allow-butler")) return;
+                !event.getChannel().getTopic().contains(butler.getConfig().getActivator())) return;
 
         if (butler.hasFlag(ExecutionFlags.NO_MODULE_MANAGER)) {
             event.getMessage().addReaction(Emojis.LOCK).queue();

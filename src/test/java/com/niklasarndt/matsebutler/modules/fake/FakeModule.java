@@ -1,5 +1,6 @@
 package com.niklasarndt.matsebutler.modules.fake;
 
+import com.niklasarndt.matsebutler.Butler;
 import com.niklasarndt.matsebutler.ModuleManagerTest;
 import com.niklasarndt.matsebutler.modules.ButlerModule;
 import com.niklasarndt.matsebutler.util.Emojis;
@@ -14,8 +15,8 @@ public class FakeModule extends ButlerModule {
     }
 
     @Override
-    public void onStartup() {
-        super.onStartup();
+    public void onStartup(Butler butler) {
+        super.onStartup(butler);
         ModuleManagerTest.HEARTBEAT = "Hello, World!";
     }
 

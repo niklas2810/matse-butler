@@ -1,5 +1,6 @@
 package com.niklasarndt.matsebutler.modules;
 
+import com.niklasarndt.matsebutler.Butler;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,13 +19,18 @@ public abstract class ButlerModule {
 
     private final ButlerModuleInformation info;
     private final List<ButlerCommand> commands = new ArrayList<>();
+    protected Butler butler;
 
     public ButlerModule(String emoji, String name, String displayName,
                         String description, String version) {
         this.info = new ButlerModuleInformation(emoji, name, displayName, description, version);
     }
 
-    public void onStartup() {
+    public void onStartup(Butler butler) {
+        if (this.butler != null) {
+            throw new IllegalStateException("This module has already been initialized.");
+        }
+        this.butler = butler;
         loadCommandsFromDefaultPackage(this);
     }
 

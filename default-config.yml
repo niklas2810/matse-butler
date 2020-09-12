@@ -24,3 +24,18 @@ admins:
   - 456
   - 789
 
+# This is the name of the channel where the daily timetable should be posted.
+daily: "stundenplan-tag"
+
+# This is the name of the channel where the weekly timetable should be posted.
+weekly: "stundenplan-woche"
+
+# This is the "activator" string which has to be in the channel's topic text
+# to mark this channel as a bot channel.
+activator: "allow-butler"
+
+# Update interval for the timetable (in minutes).
+# The query result is compared to a cache, the bot will only
+# send messages if the timetable has been updated.
+sleep-duration: 5
+
