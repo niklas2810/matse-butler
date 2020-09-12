@@ -28,16 +28,16 @@ public class Configuration {
     private Long sleepDuration;
 
     public List<Long> getAdmins() {
+        if (admins == null) admins = new ArrayList<>();
         return admins;
     }
 
     public boolean isAdmin(long id) {
-        return admins != null && admins.contains(id);
+        return getAdmins().contains(id);
     }
 
     public void addAdmin(long id) {
-        if (admins == null) admins = new ArrayList<>();
-        admins.add(id);
+        getAdmins().add(id);
     }
 
     public Long getGuild() {

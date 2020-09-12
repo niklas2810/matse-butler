@@ -14,6 +14,6 @@ public class ReloadCommand extends ButlerCommand {
 
     @Override
     public void execute(ButlerContext context) {
-        context.instance().getConfig().reload();
+        context.instance().getConfigManager().reload();
     }
 }
