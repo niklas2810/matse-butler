@@ -7,4 +7,5 @@ services:
     restart: on-failure
     volumes:
       - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
       - ./config.yml:/app/data/config.yml
