@@ -52,17 +52,17 @@ public class TimetableCommand extends ButlerCommand {
 
             if (context.args().length == 1 ||
                     context.args()[1].equalsIgnoreCase("all")) {
-                TimetableModule.instance().updateChannels(context.message().getGuild(),
-                        context.resultBuilder(), true, true, true);
+                TimetableModule.instance().updateChannels(context.resultBuilder(),
+                        true, true, true);
                 return;
             } else if (context.args()[1].equalsIgnoreCase("today")) {
 
-                TimetableModule.instance().updateChannels(context.message().getGuild(),
-                        context.resultBuilder(), true, true, true);
+                TimetableModule.instance().updateChannels(context.resultBuilder(),
+                        true, true, true);
                 return;
             } else if (context.args()[1].equalsIgnoreCase("weekly")) {
-                TimetableModule.instance().updateChannels(context.message().getGuild(),
-                        context.resultBuilder(), true, true, true);
+                TimetableModule.instance().updateChannels(context.resultBuilder(),
+                        true, true, true);
                 return;
             }
         }
