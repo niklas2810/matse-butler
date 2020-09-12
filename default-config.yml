@@ -42,3 +42,9 @@ sleep-duration: 5
 # The role which should be mentioned whenever a timetable has been updated.
 # Leave this empty to not mention a specific role.
 role-name: "Stundenplan"
+
+# This is a sentry key, allowing you to send your exceptions to Sentry automatically.
+# You can remove this from your configuration and the application should run just fine.
+#
+# Copy your DSN key from here: https://sentry.io/settings/<user>/projects/<project>/keys/
+sentry-key: "https://uvw@xyz.ingest.sentry.io/123"

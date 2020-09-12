@@ -103,6 +103,12 @@ public class TimetableModule extends ButlerModule {
         }
     }
 
+    public void updateChannels(ResultBuilder result,
+                               boolean daily, boolean weekly, boolean ignoreCache) {
+        updateChannels(butler.getJda().getGuildById(butler.getGuild()),
+                result, daily, weekly, ignoreCache);
+    }
+
     public void updateChannels(Guild guild, ResultBuilder result,
                                boolean daily, boolean weekly, boolean ignoreCache) {
         if (daily) {
@@ -183,7 +189,6 @@ public class TimetableModule extends ButlerModule {
 
     private void clearChannel(MessageChannel out) {
         out.getHistoryFromBeginning(25)
-                .queue(hist -> hist.getRetrievedHistory()
-                        .forEach(message -> message.delete().queue()));
+                .queue(hist -> out.purgeMessages(hist.getRetrievedHistory()));
     }
 }

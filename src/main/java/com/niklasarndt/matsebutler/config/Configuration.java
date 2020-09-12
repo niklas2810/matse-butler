@@ -1,9 +1,11 @@
 package com.niklasarndt.matsebutler.config;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.ArrayList;
 import java.util.List;
 
+@JsonIgnoreProperties
 public class Configuration {
 
     @JsonProperty
@@ -29,6 +31,9 @@ public class Configuration {
 
     @JsonProperty("role-name")
     private String roleName;
+
+    @JsonProperty("sentry-key")
+    private String sentryKey;
 
     public List<Long> getAdmins() {
         if (admins == null) admins = new ArrayList<>();
@@ -69,5 +74,9 @@ public class Configuration {
 
     public String getRoleName() {
         return roleName;
+    }
+
+    public String getSentryKey() {
+        return sentryKey;
     }
 }
