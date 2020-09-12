@@ -3,6 +3,7 @@ package com.niklasarndt.matsebutler.listener;
 import com.niklasarndt.matsebutler.Butler;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent;
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionRemoveEvent;
 import net.dv8tion.jda.api.events.message.priv.react.PrivateMessageReactionAddEvent;
@@ -12,7 +13,6 @@ import net.jodah.expiringmap.ExpirationPolicy;
 import net.jodah.expiringmap.ExpiringMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -36,7 +36,7 @@ public class ReactionListener extends ListenerAdapter {
 
     @Override
     public void onPrivateMessageReactionAdd(@Nonnull PrivateMessageReactionAddEvent event) {
-        if (!passesFilter(event.getReactionEmote().getEmoji())) return;
+        if (!passesFilter(event.getReactionEmote().getEmoji(), event.getUser())) return;
 
         scheduleReactionProcessing(event.getMessageIdLong(), event.getChannel(),
                 event.getReactionEmote().getEmoji());
@@ -44,7 +44,7 @@ public class ReactionListener extends ListenerAdapter {
 
     @Override
     public void onPrivateMessageReactionRemove(@Nonnull PrivateMessageReactionRemoveEvent event) {
-        if (!passesFilter(event.getReactionEmote().getEmoji())) return;
+        if (!passesFilter(event.getReactionEmote().getEmoji(), event.getUser())) return;
         removed.put(event.getMessageIdLong(), event.getReactionEmote().getEmoji());
     }
 
@@ -53,7 +53,7 @@ public class ReactionListener extends ListenerAdapter {
         if (event.getGuild().getIdLong() != butler.getGuild()) return;
         if (event.getChannel().getTopic() == null ||
                 !event.getChannel().getTopic().contains("allow-butler")) return;
-        if (!passesFilter(event.getReactionEmote().getEmoji())) return;
+        if (!passesFilter(event.getReactionEmote().getEmoji(), event.getUser())) return;
 
         scheduleReactionProcessing(event.getMessageIdLong(), event.getChannel(),
                 event.getReactionEmote().getEmoji());
@@ -64,13 +64,13 @@ public class ReactionListener extends ListenerAdapter {
         if (event.getGuild().getIdLong() != butler.getGuild()) return;
         if (event.getChannel().getTopic() == null ||
                 !event.getChannel().getTopic().contains("allow-butler")) return;
-        if (!passesFilter(event.getReactionEmote().getEmoji())) return;
+        if (!passesFilter(event.getReactionEmote().getEmoji(), event.getUser())) return;
 
         removed.put(event.getMessageIdLong(), event.getReactionEmote().getEmoji());
     }
 
-    private boolean passesFilter(String emoji) {
-
+    private boolean passesFilter(String emoji, User user) {
+        if (!butler.isAdmin(user.getIdLong()) || user.isBot()) return false;
         boolean registered = REACT_EMOJIS.contains(emoji);
         logger.debug("Received emote: {} (Registered? {})", emoji, registered);
         return registered;

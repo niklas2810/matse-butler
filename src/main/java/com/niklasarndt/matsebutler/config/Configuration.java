@@ -1,7 +1,6 @@
 package com.niklasarndt.matsebutler.config;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,6 +14,12 @@ public class Configuration {
 
     @JsonProperty
     private String token;
+
+    @JsonProperty(value = "daily")
+    private String dailyChannel;
+
+    @JsonProperty(value = "weekly")
+    private String weeklyChannel;
 
     public List<Long> getAdmins() {
         return admins;
@@ -35,5 +40,13 @@ public class Configuration {
 
     public String getToken() {
         return token;
+    }
+
+    public String getDailyChannel() {
+        return dailyChannel == null ? "stundenplan-tag" : dailyChannel;
+    }
+
+    public String getWeeklyChannel() {
+        return weeklyChannel == null ? "stundenplan-woche" : weeklyChannel;
     }
 }
