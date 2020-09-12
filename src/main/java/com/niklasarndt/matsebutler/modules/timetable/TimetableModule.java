@@ -183,7 +183,6 @@ public class TimetableModule extends ButlerModule {
 
     private void clearChannel(MessageChannel out) {
         out.getHistoryFromBeginning(25)
-                .queue(hist -> hist.getRetrievedHistory()
-                        .forEach(message -> message.delete().queue()));
+                .queue(hist -> out.purgeMessages(hist.getRetrievedHistory()));
     }
 }
