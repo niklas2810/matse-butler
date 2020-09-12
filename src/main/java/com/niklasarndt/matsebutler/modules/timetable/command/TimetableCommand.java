@@ -36,6 +36,14 @@ public class TimetableCommand extends ButlerCommand {
             TimetableModule.instance().start();
             context.resultBuilder().success("The auto-updater has just been started.");
             return;
+        } else if (context.args()[0].equalsIgnoreCase("stop")) {
+            if (!context.instance().isAdmin(context.message().getAuthor().getIdLong())) {
+                context.resultBuilder().denyAccess();
+                return;
+            }
+            TimetableModule.instance().stop();
+            context.resultBuilder().success("The auto-updater has been stopped.");
+            return;
         } else if (context.args()[0].equalsIgnoreCase("update")) {
             if (!context.instance().isAdmin(context.message().getAuthor().getIdLong())) {
                 context.resultBuilder().denyAccess();
@@ -61,7 +69,7 @@ public class TimetableCommand extends ButlerCommand {
 
 
         context.resultBuilder()
-                .notFound("Please use `timetable (status|start)` or " +
+                .notFound("Please use `timetable (status|start|stop)` or " +
                         "`timetable update (all|today|weekly)` (Admins only!)");
     }
 }

@@ -40,7 +40,6 @@ public class TimetableBuilder {
         list.sort(Comparator.comparing(TimetableEntry::getStartParsed)); //Sort entries by start time
 
         if (list.hashCode() == currentHash) {
-            logger.debug("Hash code is still {}, skipping build", currentHash);
             return new Pair<>() {
                 @Override
                 public Integer getLeft() {
