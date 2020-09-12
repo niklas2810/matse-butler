@@ -15,7 +15,6 @@ import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import javax.security.auth.login.LoginException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -54,6 +53,11 @@ public class Butler {
         this.flags = Collections.unmodifiableList(List.of(flags));
         this.configManager = new ConfigurationManager();
 
+        if (configManager.getConfig().getSentryKey() != null) {
+            logger.info("Using sentry key specified in the configuration file");
+
+            Sentry.init(configManager.getConfig().getSentryKey());
+        }
 
         if (hasFlag(ExecutionFlags.NO_API_CONNECTION)) {
             logger.warn("NO_API_CONNECTION: App will not be kept alive by daemon.");
@@ -83,8 +87,6 @@ public class Butler {
 
             Sentry.init();
             logger.info("Has Sentry been initialized correctly? {}", Sentry.isInitialized());
-        } else {
-            logger.info("Specify your DSN via SENTRY_DSN to enable Sentry logging.");
         }
 
         try {
