@@ -34,16 +34,21 @@ public class DateUtils {
 
     public static Pair<LocalDate, LocalDate> getCurrentWeek() { //Mo-Fr
         LocalDate d = LocalDate.now();
+        if (d.getDayOfWeek().ordinal() > 4) {
+            d = d.plusDays(d.getDayOfWeek().ordinal() - 3);
+        }
+
+        final LocalDate finalDate = d;
 
         return new Pair<>() {
             @Override
             public LocalDate getLeft() {
-                return d.minusDays(d.getDayOfWeek().ordinal());
+                return finalDate.minusDays(finalDate.getDayOfWeek().ordinal());
             }
 
             @Override
             public LocalDate getRight() {
-                return d.minusDays(d.getDayOfWeek().ordinal() - 4);
+                return finalDate.minusDays(finalDate.getDayOfWeek().ordinal() - 4);
             }
         };
     }

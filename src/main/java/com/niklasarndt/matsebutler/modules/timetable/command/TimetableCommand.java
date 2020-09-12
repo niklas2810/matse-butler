@@ -1,96 +1,115 @@
 package com.niklasarndt.matsebutler.modules.timetable.command;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.niklasarndt.matsebutler.modules.ButlerCommand;
 import com.niklasarndt.matsebutler.modules.ButlerContext;
 import com.niklasarndt.matsebutler.modules.timetable.DateUtils;
-import com.niklasarndt.matsebutler.modules.timetable.model.TimetableEntry;
+import com.niklasarndt.matsebutler.modules.timetable.TimetableBuilder;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-import java.io.IOException;
-import java.net.URL;
+import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.entities.GuildChannel;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.internal.utils.tuple.Pair;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 public class TimetableCommand extends ButlerCommand {
 
+    private final TimetableBuilder builder = new TimetableBuilder();
+
     public TimetableCommand() {
-        super("timetable", "Updates the timetable.");
+        super("timetable", 0, 2, "Updates the timetable.",
+                false);
     }
 
     @Override
     public void execute(ButlerContext context) {
-        //Pair<LocalDate, LocalDate> week = DateUtils.getCurrentWeek();
-        List<EmbedBuilder> embeds = buildTimetableForToday(context);
+        if (context.args().length == 0
+                || context.args()[0].equalsIgnoreCase("heute")
+                || context.args()[0].equalsIgnoreCase("today")) {
 
-        embeds.forEach(embed -> context.message().getChannel().sendMessage(embed.build()).queue());
-    }
+            //Pair<LocalDate, LocalDate> week = DateUtils.getCurrentWeek();
+            List<EmbedBuilder> embeds = builder.buildTimetableForToday(context);
 
-    private List<EmbedBuilder> buildTimetableForToday(ButlerContext context) {
-        LocalDate d = DateUtils.getCurrentDay();
-        return buildTimetable(context, d, d);
-    }
+            embeds.forEach(embed ->
+                    context.message().getChannel().sendMessage(embed.build()).queue());
+            return;
+        } else if (context.args()[0].equalsIgnoreCase("update")) {
+            if (!context.instance().isAdmin(context.message().getAuthor().getIdLong())) {
+                context.resultBuilder().denyAccess();
+                return;
+            }
 
-    private List<EmbedBuilder> buildTimetable(ButlerContext context, LocalDate start, LocalDate end) {
-        ObjectMapper mapper = new ObjectMapper();
-        List<TimetableEntry> list = new ArrayList<>();
-
-        try {
-            list.addAll(Arrays.asList(mapper.readValue(new URL(DateUtils.getRequest(start, end)),
-                    TimetableEntry[].class)));
-        } catch (IOException e) {
-            logger.error("Can not parse timetable url", e);
+            if (context.args().length == 1 ||
+                    context.args()[1].equalsIgnoreCase("all")) {
+                updateChannels(context, true, true);
+                return;
+            } else if (context.args()[1].equalsIgnoreCase("today")) {
+                updateChannels(context, true, false);
+                return;
+            } else if (context.args()[1].equalsIgnoreCase("weekly")) {
+                updateChannels(context, false, true);
+                return;
+            }
         }
 
-        list.sort(Comparator.comparing(TimetableEntry::getStartParsed)); //Sort entries by start time
-        List<EmbedBuilder> embeds = new ArrayList<>();
 
-        start.datesUntil(end.plusDays(1)).forEach(day -> { //Build embeds
-            embeds.add(new EmbedBuilder().setTitle(getDayTitle(day))); //Add title of day
+        context.resultBuilder()
+                .notFound("Please use `today` or " +
+                        "`today update (all|today|weekly)` (Admins only!)");
+    }
 
-            list.stream() //Add every item of this day to the list
-                    .filter(i -> i.getStartParsed().getDayOfMonth() == day.getDayOfMonth())
-                    .forEach(item -> embeds.get(embeds.size() - 1).addField(buildField(item)));
-            if (embeds.get(embeds.size() - 1).getFields().size() == 0) {
-                embeds.get(embeds.size() - 1).addField("",
-                        "Für diesen Zeitraum sind keine Stunden angesetzt.", false);
+    private void updateChannels(ButlerContext context, boolean daily, boolean weekly) {
+        if (daily) {
+            logger.info("Producing daily timetable");
+            Optional<GuildChannel> dailyChannel =
+                    retrieveChannel(context, context.instance().getConfig().getDailyChannel());
+
+            if (dailyChannel.isEmpty()) {
+                context.resultBuilder().error("The channel '%s' does not exist.",
+                        context.instance().getConfig().getDailyChannel());
+                return;
             }
-        });
 
-        addFooter(embeds, context.instance().getJda().getSelfUser().getAvatarUrl());
-        return embeds;
+            MessageChannel out = (MessageChannel) dailyChannel.get();
+            clearChannel(out);
+            List<EmbedBuilder> embeds = builder.buildTimetableForToday(context);
+            embeds.forEach(embed ->
+                    out.sendMessage(embed.build()).queue());
+            logger.info("Sending {} messages.", embeds.size());
+        }
+
+        if (weekly) {
+            logger.info("Producing weekly timetable");
+            Optional<GuildChannel> weeklyChannel =
+                    retrieveChannel(context, context.instance().getConfig().getWeeklyChannel());
+
+            if (weeklyChannel.isEmpty()) {
+                context.resultBuilder().error("The channel '%s' does not exist.",
+                        context.instance().getConfig().getDailyChannel());
+                return;
+            }
+
+            MessageChannel out = (MessageChannel) weeklyChannel.get();
+            clearChannel(out);
+            Pair<LocalDate, LocalDate> week = DateUtils.getCurrentWeek();
+            List<EmbedBuilder> embeds = builder.buildTimetable(context,
+                    week.getLeft(), week.getRight());
+            embeds.forEach(embed ->
+                    out.sendMessage(embed.build()).queue());
+            logger.info("Sending {} messages.", embeds.size());
+        }
     }
 
-    private void addFooter(List<EmbedBuilder> embeds, String iconUrl) {
-        LocalDateTime now = LocalDateTime.now();
-        embeds.forEach(embed -> embed.setFooter(
-                String.format("Generated at %02d.%02d.%04d, %02d:%02d",
-                        now.getDayOfMonth(), now.getMonthValue(), now.getYear(),
-                        now.getHour(), now.getMinute()),
-                iconUrl));
-
+    private Optional<GuildChannel> retrieveChannel(ButlerContext context, String name) {
+        return context.message().getGuild().getChannels()
+                .stream().filter(ch -> ch.getType() == ChannelType.TEXT
+                        && ch.getName().equals(name)).findFirst();
     }
 
-    private MessageEmbed.Field buildField(TimetableEntry entry) {
-        //Format: <Title> (hh:mm-hh:mm, <Name>)
-        //Content: Info
-        String title = String.format("%s (%02d:%02d-%02d:%02d%s)",
-                entry.getTitle(),
-                entry.getStartParsed().getHour(), entry.getStartParsed().getMinute(),
-                entry.getEndParsed().getHour(), entry.getEndParsed().getMinute(),
-                entry.getLecturer().getName() != null ? ", " + entry.getLecturer().getName() : "");
-
-        return new MessageEmbed.Field(title,
-                entry.getInformation().length() > 0 ? entry.getInformation() :
-                        "Keine weiteren Informationen", true);
-    }
-
-    private String getDayTitle(LocalDate date) { //Parses a LocalDate to dd.mm.yyyy
-        return String.format("%s, %02d.%02d.%04d", date.getDayOfWeek().name(),
-                date.getDayOfMonth(), date.getMonthValue(), date.getYear());
+    private void clearChannel(MessageChannel out) {
+        out.getHistoryFromBeginning(25)
+                .queue(hist -> hist.getRetrievedHistory()
+                        .forEach(message -> message.delete().queue()));
     }
 }

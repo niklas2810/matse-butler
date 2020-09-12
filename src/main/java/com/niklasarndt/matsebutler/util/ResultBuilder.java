@@ -51,7 +51,7 @@ public class ResultBuilder {
     public void invalidArgsLength(int min, int max, int actual) {
         type = ResultType.ERROR;
         if (min == max || min == 0) {
-            output = String.format("This command does not accept parameters (your provided %d).",
+            output = String.format("This command does not accept parameters (you provided %d).",
                     actual);
         } else {
             output = String.format("This command only accepts %d-%d parameters (you provided %d).",
@@ -144,9 +144,12 @@ public class ResultBuilder {
         this.output = output;
     }
 
-
     public void unauthorized(String output, Object... args) {
         unauthorized(String.format(output, args));
+    }
+
+    public void denyAccess() {
+        unauthorized("You are not permitted to execute this command.");
     }
 
     public void output(ResultBuilder other) {

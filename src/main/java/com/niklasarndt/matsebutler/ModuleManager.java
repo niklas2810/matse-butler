@@ -8,7 +8,6 @@ import net.dv8tion.jda.api.entities.Message;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -115,8 +114,7 @@ public class ModuleManager {
                     && cmd.info().requiresPrivileges()
                     && !instance.isAdmin(origin.getAuthor().getIdLong())) {
 
-                context.resultBuilder().unauthorized("You are not permitted " +
-                        "to execute this command.");
+                context.resultBuilder().denyAccess();
             } else {
                 try {
                     cmd.execute(context);
