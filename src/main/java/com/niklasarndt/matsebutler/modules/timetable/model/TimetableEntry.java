@@ -1,10 +1,11 @@
 package com.niklasarndt.matsebutler.modules.timetable.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
 
@@ -42,6 +43,15 @@ public class TimetableEntry {
     @JsonProperty
     private String isLecture;
 
+    @JsonIgnore
+    private LocalDateTime startParsed;
+
+    @JsonIgnore
+    private LocalDateTime endParsed;
+
+    @JsonIgnore
+    private String infoParsed;
+
     public String getTitle() {
         return title;
     }
@@ -55,27 +65,32 @@ public class TimetableEntry {
     }
 
     public LocalDateTime getStartParsed() {
+        if (startParsed != null) return startParsed;
         //2020-09-11T08:00:00
-        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'hh:mm:ss");
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+                .withZone(ZoneId.of("GMT"));
 
         try {
-            return LocalDateTime.parse(rawStart, format);
+            startParsed = LocalDateTime.parse(rawStart, format);
         } catch (Exception e) {
             logger.error("Can not parse start time {}", rawStart, e);
-            return LocalDateTime.now();
+            startParsed = LocalDateTime.now();
         }
+        return startParsed;
     }
 
     public LocalDateTime getEndParsed() {
+        if (endParsed != null) return endParsed;
         //2020-09-11T08:00:00
-        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'hh:mm:ss");
-
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+                .withZone(ZoneId.of("GMT"));
         try {
-            return LocalDateTime.parse(rawEnd, format);
+            endParsed = LocalDateTime.parse(rawEnd, format);
         } catch (Exception e) {
             logger.error("Can not parse end time {}", rawEnd, e);
-            return LocalDateTime.now();
+            endParsed = LocalDateTime.now();
         }
+        return endParsed;
     }
 
     public Location getLocation() {
@@ -87,7 +102,10 @@ public class TimetableEntry {
     }
 
     public String getInformation() {
-        return information;
+        if (infoParsed != null) return infoParsed;
+
+        infoParsed = information.replace("<br />", "\n").trim();
+        return infoParsed;
     }
 
     public boolean isHoliday() {
