@@ -36,6 +36,15 @@ public class TimetableModule extends ButlerModule {
         super(Emojis.HOURGLASS, "timetable", "Stundenplan",
                 "Zeigt den Stundenplan an.", "1.0");
         instance = this;
+        new Thread(() -> {
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            start();
+        }).start();
     }
 
     public static TimetableModule instance() {
