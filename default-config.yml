@@ -39,3 +39,6 @@ activator: "allow-butler"
 # send messages if the timetable has been updated.
 sleep-duration: 5
 
+# The role which should be mentioned whenever a timetable has been updated.
+# Leave this empty to not mention a specific role.
+role-name: "Stundenplan"

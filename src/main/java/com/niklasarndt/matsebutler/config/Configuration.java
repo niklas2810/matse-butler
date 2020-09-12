@@ -27,6 +27,9 @@ public class Configuration {
     @JsonProperty("sleep-duration")
     private Long sleepDuration;
 
+    @JsonProperty("role-name")
+    private String roleName;
+
     public List<Long> getAdmins() {
         if (admins == null) admins = new ArrayList<>();
         return admins;
@@ -62,5 +65,9 @@ public class Configuration {
 
     public long getSleepDuration() {
         return sleepDuration != null ? sleepDuration * 60000 : 5 * 60000;
+    }
+
+    public String getRoleName() {
+        return roleName;
     }
 }
