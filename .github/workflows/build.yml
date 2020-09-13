@@ -2,6 +2,7 @@
 name: Build Main Branch
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
