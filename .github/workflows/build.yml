@@ -17,6 +17,7 @@ env:
 
 jobs:
   build:
+    name: ⚙️ Build Project
     runs-on: ubuntu-latest
 
     steps:
@@ -46,10 +47,14 @@ jobs:
 
   docker:
     needs: build
+    name: 🐳 Generate Docker Image
     runs-on: ubuntu-latest
 
     steps:
-      - name: ⬇️ Download .jar
+      - name: ⏬ Checkout code
+        uses: actions/checkout@v2
+        
+      - name: ⏬ Download pre-built .jar
         uses: actions/download-artifact@v2
         with:
           name: jar-file
