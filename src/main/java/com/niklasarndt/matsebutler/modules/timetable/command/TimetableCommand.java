@@ -3,6 +3,7 @@ package com.niklasarndt.matsebutler.modules.timetable.command;
 import com.niklasarndt.matsebutler.modules.ButlerCommand;
 import com.niklasarndt.matsebutler.modules.ButlerContext;
 import com.niklasarndt.matsebutler.modules.timetable.TimetableModule;
+import com.niklasarndt.matsebutler.threads.TimetableThread;
 import com.niklasarndt.matsebutler.util.ButlerUtils;
 
 public class TimetableCommand extends ButlerCommand {
@@ -15,15 +16,16 @@ public class TimetableCommand extends ButlerCommand {
 
     @Override
     public void execute(ButlerContext context) {
+        TimetableThread updater = TimetableModule.instance().getUpdater();
         if (context.args().length == 0
                 || context.args()[0].equalsIgnoreCase("status")) {
-            long last = TimetableModule.instance().lastExecutionTimestamp();
 
-            if (last == 0) {
-                context.resultBuilder().success("The auto-updater did not run yet.");
+            if (!updater.isRunning()) {
+                context.resultBuilder().success("The auto-updater is currently disabled.");
             } else {
                 context.resultBuilder().success("The auto-updater ran %s ago.",
-                        ButlerUtils.prettyPrintTime(System.currentTimeMillis() - last));
+                        ButlerUtils.prettyPrintTime(
+                                System.currentTimeMillis() - updater.lastExecutionTimestamp()));
             }
 
             return;
@@ -33,7 +35,7 @@ public class TimetableCommand extends ButlerCommand {
                 return;
             }
 
-            TimetableModule.instance().start();
+            updater.start();
             context.resultBuilder().success("The auto-updater has just been started.");
             return;
         } else if (context.args()[0].equalsIgnoreCase("stop")) {
@@ -41,7 +43,7 @@ public class TimetableCommand extends ButlerCommand {
                 context.resultBuilder().denyAccess();
                 return;
             }
-            TimetableModule.instance().stop();
+            updater.stop();
             context.resultBuilder().success("The auto-updater has been stopped.");
             return;
         } else if (context.args()[0].equalsIgnoreCase("update")) {
@@ -52,15 +54,15 @@ public class TimetableCommand extends ButlerCommand {
 
             if (context.args().length == 1 ||
                     context.args()[1].equalsIgnoreCase("all")) {
-                TimetableModule.instance().updateChannels(context.resultBuilder(),
+                updater.updateChannels(context.resultBuilder(),
                         true, true, true);
                 return;
             } else if (context.args()[1].equalsIgnoreCase("today")) {
-                TimetableModule.instance().updateChannels(context.resultBuilder(),
+                updater.updateChannels(context.resultBuilder(),
                         true, false, true);
                 return;
             } else if (context.args()[1].equalsIgnoreCase("weekly")) {
-                TimetableModule.instance().updateChannels(context.resultBuilder(),
+                updater.updateChannels(context.resultBuilder(),
                         false, true, true);
                 return;
             }
