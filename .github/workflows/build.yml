@@ -1,5 +1,5 @@
 # https://github.com/actions/starter-workflows/blob/main/ci/docker-publish.yml
-name: Build using Docker
+name: Build Main Branch
 
 on:
   push:
@@ -38,11 +38,36 @@ jobs:
       - name: 📦 Build package
         run: mvn clean package
 
+      - name: 🚀 Upload Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: jar-file
+          path: ./target/*-shaded.jar
+
+  docker:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: ⬇️ Download .jar
+        uses: actions/download-artifact@v2
+        with:
+          name: jar-file
+          path: ./target/app-shaded.jar
+
+      - name: 💽 Restore Docker cache
+        uses: actions/cache@v2
+        with:
+          path: /var/lib/docker/image
+          key: docker-${{ runner.os }}-${{ hashFiles('**/Dockerfile') }}
+          restore-keys: |
+            docker-${{ runner.os }}-
+
       - name: 📦 Build Docker image
         run: docker build . --file Dockerfile --tag $IMAGE_NAME
 
       - name: 🔑 Log in to Docker Hub
-        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login --username ${{ github.actor }} --password-stdin
+          run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login --username ${{ github.actor }} --password-stdin
 
       - name: ⬆️ Push image
         run: |
