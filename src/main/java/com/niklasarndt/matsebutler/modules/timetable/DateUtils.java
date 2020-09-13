@@ -2,6 +2,7 @@ package com.niklasarndt.matsebutler.modules.timetable;
 
 import net.dv8tion.jda.internal.utils.tuple.Pair;
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 public class DateUtils {
 
@@ -26,16 +27,23 @@ public class DateUtils {
     public static LocalDate getCurrentDay() {
         LocalDate d = LocalDate.now();
 
+        //If past 6PM, select the next day.
+        if (LocalTime.now().getHour() > 17) d = d.plusDays(1);
+
+        //If past Friday, select the next Monday.
         if (d.getDayOfWeek().ordinal() > 4) {
-            d = d.plusDays(d.getDayOfWeek().ordinal() - 3);
+            return getCurrentWeek().getLeft();
         }
+
         return d;
     }
 
     public static Pair<LocalDate, LocalDate> getCurrentWeek() { //Mo-Fr
         LocalDate d = LocalDate.now();
-        if (d.getDayOfWeek().ordinal() > 4) {
-            d = d.plusDays(d.getDayOfWeek().ordinal() - 3);
+        //If past Friday or Friday past 6PM, select the next week.
+        if (d.getDayOfWeek().ordinal() > 4 ||
+                (d.getDayOfWeek().ordinal() == 4 && LocalTime.now().getHour() > 17)) {
+            d = d.plusDays(d.getDayOfWeek().ordinal());
         }
 
         final LocalDate finalDate = d;
