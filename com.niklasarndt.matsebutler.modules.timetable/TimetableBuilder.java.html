@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TimetableBuilder.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">MatseButler</a> &gt; <a href="index.source.html" class="el_package">com.niklasarndt.matsebutler.modules.timetable</a> &gt; <span class="el_source">TimetableBuilder.java</span></div><h1>TimetableBuilder.java</h1><pre class="source lang-java linenums">package com.niklasarndt.matsebutler.modules.timetable;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.niklasarndt.matsebutler.Butler;
+import com.niklasarndt.matsebutler.modules.timetable.model.TimetableEntry;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.internal.utils.tuple.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import java.io.IOException;
+import java.net.URL;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+
+/**
+ * Created by Niklas on 2020/09/12.
+ */
+<span class="fc" id="L24">public class TimetableBuilder {</span>
+
+<span class="fc" id="L26">    private final Logger logger = LoggerFactory.getLogger(getClass());</span>
+
+    public Pair&lt;Integer, List&lt;EmbedBuilder&gt;&gt; buildTimetable(Butler butler, LocalDate start,
+                                                            LocalDate end, int currentHash) {
+<span class="nc" id="L30">        ObjectMapper mapper = new ObjectMapper();</span>
+<span class="nc" id="L31">        List&lt;TimetableEntry&gt; list = new ArrayList&lt;&gt;();</span>
+
+        try {
+<span class="nc" id="L34">            list.addAll(Arrays.asList(mapper.readValue(new URL(DateUtils.getRequest(start, end)),</span>
+                    TimetableEntry[].class)));
+<span class="nc" id="L36">        } catch (IOException e) {</span>
+<span class="nc" id="L37">            logger.error(&quot;Can not parse timetable url&quot;, e);</span>
+<span class="nc" id="L38">        }</span>
+
+<span class="nc" id="L40">        list.sort(Comparator.comparing(TimetableEntry::getStartParsed)); //Sort entries by start time</span>
+
+<span class="nc bnc" id="L42" title="All 2 branches missed.">        if (list.hashCode() == currentHash) {</span>
+<span class="nc" id="L43">            return new Pair&lt;&gt;() {</span>
+                @Override
+                public Integer getLeft() {
+<span class="nc" id="L46">                    return currentHash;</span>
+                }
+
+                @Override
+                public List&lt;EmbedBuilder&gt; getRight() {
+<span class="nc" id="L51">                    return null;</span>
+                }
+            };
+        }
+
+
+<span class="nc" id="L57">        List&lt;EmbedBuilder&gt; embeds = new ArrayList&lt;&gt;();</span>
+
+<span class="nc" id="L59">        start.datesUntil(end.plusDays(1)).forEach(day -&gt; { //Build embeds</span>
+<span class="nc" id="L60">            embeds.add(new EmbedBuilder().setTitle(getDayTitle(day))); //Add title of day</span>
+
+<span class="nc" id="L62">            list.stream() //Add every item of this day to the list</span>
+<span class="nc bnc" id="L63" title="All 2 branches missed.">                    .filter(i -&gt; i.getStartParsed().getDayOfMonth() == day.getDayOfMonth())</span>
+<span class="nc" id="L64">                    .forEach(item -&gt; embeds.get(embeds.size() - 1).addField(buildField(item)));</span>
+<span class="nc bnc" id="L65" title="All 2 branches missed.">            if (embeds.get(embeds.size() - 1).getFields().size() == 0) {</span>
+<span class="nc" id="L66">                embeds.get(embeds.size() - 1).addField(&quot;&quot;,</span>
+                        &quot;Für diesen Zeitraum sind keine Stunden angesetzt.&quot;, false);
+            }
+<span class="nc" id="L69">        });</span>
+
+<span class="nc bnc" id="L71" title="All 2 branches missed.">        addFooter(embeds, butler != null ? butler.getJda().getSelfUser().getAvatarUrl() : null);</span>
+<span class="nc" id="L72">        return new Pair&lt;&gt;() {</span>
+            @Override
+            public Integer getLeft() {
+<span class="nc" id="L75">                return list.hashCode();</span>
+            }
+
+            @Override
+            public List&lt;EmbedBuilder&gt; getRight() {
+<span class="nc" id="L80">                return embeds;</span>
+            }
+        };
+    }
+
+    private void addFooter(List&lt;EmbedBuilder&gt; embeds, String iconUrl) {
+<span class="nc" id="L86">        LocalDateTime now = LocalDateTime.now();</span>
+<span class="nc" id="L87">        embeds.forEach(embed -&gt; embed.setFooter(</span>
+<span class="nc" id="L88">                String.format(&quot;Generated at %02d.%02d.%04d, %02d:%02d&quot;,</span>
+<span class="nc" id="L89">                        now.getDayOfMonth(), now.getMonthValue(), now.getYear(),</span>
+<span class="nc" id="L90">                        now.getHour(), now.getMinute()),</span>
+                iconUrl));
+
+<span class="nc" id="L93">    }</span>
+
+    private MessageEmbed.Field buildField(TimetableEntry entry) {
+        //Format: &lt;Title&gt; (hh:mm-hh:mm, &lt;Name&gt;)
+        //Content: Info
+<span class="nc" id="L98">        String title = String.format(&quot;%s (%02d:%02d-%02d:%02d%s)&quot;,</span>
+<span class="nc" id="L99">                entry.getTitle(),</span>
+<span class="nc" id="L100">                entry.getStartParsed().getHour(), entry.getStartParsed().getMinute(),</span>
+<span class="nc" id="L101">                entry.getEndParsed().getHour(), entry.getEndParsed().getMinute(),</span>
+<span class="nc bnc" id="L102" title="All 2 branches missed.">                entry.getLecturer().getName() != null ? &quot;, &quot; + entry.getLecturer().getName() : &quot;&quot;);</span>
+
+<span class="nc" id="L104">        return new MessageEmbed.Field(title,</span>
+<span class="nc bnc" id="L105" title="All 2 branches missed.">                entry.getInformation().length() &gt; 0 ? entry.getInformation() :</span>
+<span class="nc" id="L106">                        &quot;Keine weiteren Informationen&quot;, true);</span>
+    }
+
+    private String getDayTitle(LocalDate date) { //Parses a LocalDate to dd.mm.yyyy
+<span class="nc" id="L110">        return String.format(&quot;%s, %02d.%02d.%04d&quot;, getWeekdayName(date.getDayOfWeek()),</span>
+<span class="nc" id="L111">                date.getDayOfMonth(), date.getMonthValue(), date.getYear());</span>
+    }
+
+    private String getWeekdayName(DayOfWeek day) {
+<span class="nc bnc" id="L115" title="All 8 branches missed.">        return switch (day) {</span>
+<span class="nc" id="L116">            case MONDAY -&gt; &quot;Montag&quot;;</span>
+<span class="nc" id="L117">            case TUESDAY -&gt; &quot;Dienstag&quot;;</span>
+<span class="nc" id="L118">            case WEDNESDAY -&gt; &quot;Mittwoch&quot;;</span>
+<span class="nc" id="L119">            case THURSDAY -&gt; &quot;Donnerstag&quot;;</span>
+<span class="nc" id="L120">            case FRIDAY -&gt; &quot;Freitag&quot;;</span>
+<span class="nc" id="L121">            case SATURDAY -&gt; &quot;Samstag&quot;;</span>
+<span class="nc" id="L122">            case SUNDAY -&gt; &quot;Sonntag&quot;;</span>
+        };
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

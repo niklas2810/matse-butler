@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ScheduleManager.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">MatseButler</a> &gt; <a href="index.source.html" class="el_package">com.niklasarndt.matsebutler.scheduler</a> &gt; <span class="el_source">ScheduleManager.java</span></div><h1>ScheduleManager.java</h1><pre class="source lang-java linenums">package com.niklasarndt.matsebutler.scheduler;
+
+import com.niklasarndt.matsebutler.Butler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+
+/**
+ * Created by Niklas on 2020/08/01.
+ * &lt;p&gt;
+ * WARNING: Automating a task without explicit user consent is considered API abuse.
+ * A message should only be scheduled if the user to you to do so. (e.g. via the remind command)
+ * &lt;p&gt;
+ * Quote: &quot;You may not post messages, trigger notifications, or play audio on behalf of a Discord
+ * user except in response to such Discord user expressly opting-in to each instance of such action&quot;
+ * &lt;p&gt;
+ * https://discord.com/developers/docs/policy (1st August 2020)
+ */
+public class ScheduleManager {
+
+    public static final String MESSAGE_REMINDER_NAME = &quot;Scheduled Message&quot;;
+
+<span class="fc" id="L31">    private final Logger logger = LoggerFactory.getLogger(getClass());</span>
+<span class="fc" id="L32">    private final ScheduledExecutorService executorService = Executors</span>
+<span class="fc" id="L33">            .newScheduledThreadPool(1, runnable -&gt; new Thread(null, runnable,</span>
+<span class="fc" id="L34">                    &quot;ScheduleThread-&quot; + System.currentTimeMillis()));</span>
+    private final Butler butler;
+<span class="fc" id="L36">    private final List&lt;ScheduledTask&gt; failedTasks = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L37">    private final AtomicInteger index = new AtomicInteger();</span>
+<span class="fc" id="L38">    private List&lt;ScheduledTask&gt; tasks = new ArrayList&lt;&gt;();</span>
+
+<span class="fc" id="L40">    public ScheduleManager(Butler butler) {</span>
+<span class="fc" id="L41">        this.butler = butler;</span>
+<span class="fc" id="L42">    }</span>
+
+    private ScheduledTask schedule(ScheduledTask task) {
+<span class="fc" id="L45">        tasks.add(task);</span>
+<span class="fc" id="L46">        executorService.schedule(() -&gt; {</span>
+<span class="fc bfc" id="L47" title="All 2 branches covered.">            if (!hasTask(task.getId())) {</span>
+<span class="fc" id="L48">                logger.debug(&quot;Skipping cancelled task with id {}.&quot;, task.getId());</span>
+<span class="fc" id="L49">                return;</span>
+            }
+            try {
+<span class="fc" id="L52">                task.execute();</span>
+<span class="fc" id="L53">            } catch (Exception e) {</span>
+<span class="fc" id="L54">                logger.error(&quot;Failed to run scheduled task&quot;, e);</span>
+<span class="fc" id="L55">                failedTasks.add(task);</span>
+<span class="fc" id="L56">            }</span>
+<span class="fc" id="L57">        }, task.getWaitTimeInMs(), TimeUnit.MILLISECONDS);</span>
+<span class="fc" id="L58">        return task;</span>
+    }
+
+    public ScheduledTask schedule(String name, Runnable runnable, long waitTimeInMs) {
+<span class="fc" id="L62">        return schedule(new ScheduledTask(index.incrementAndGet(), name, runnable, waitTimeInMs));</span>
+    }
+
+    /*
+    public void scheduleMessage(String message, long waitTimeInMs) {
+        schedule(MESSAGE_REMINDER_NAME, () -&gt; {
+            String duration = ButlerUtils.prettyPrintTime(waitTimeInMs);
+
+            String intro = String.format(&quot;Hey there %s Here's what you &quot; +
+                            &quot;asked me to **remind** you of **%s ago**!&quot;, Emojis.WAVE,
+                    duration);
+
+            MessageEmbed embed = new EmbedBuilder()
+                    .addField(&quot;Your Reminder&quot;, message, false)
+                    .setFooter(String.format(&quot;Requested %s ago&quot;, duration)).build();
+
+            butler.getJda().retrieveUserById(butler.getOwnerId())
+                    .flatMap(User::openPrivateChannel)
+                    .flatMap(channel -&gt; channel.sendMessage(intro).embed(embed))
+                    .flatMap(sent -&gt; sent.addReaction(Emojis.HOURGLASS))
+                    .queue();
+        }, waitTimeInMs);
+    }
+*/
+    public void shutdown() {
+<span class="fc" id="L87">        executorService.shutdown();</span>
+        try {
+<span class="pc bpc" id="L89" title="1 of 2 branches missed.">            if (!executorService.awaitTermination(1, TimeUnit.SECONDS)) {</span>
+<span class="nc" id="L90">                executorService.shutdownNow();</span>
+            }
+<span class="nc" id="L92">        } catch (InterruptedException e) {</span>
+<span class="nc" id="L93">            logger.warn(&quot;Executor service did not shut down automatically, forcing shutdown&quot;, e);</span>
+<span class="nc" id="L94">            executorService.shutdownNow();</span>
+<span class="fc" id="L95">        }</span>
+<span class="fc" id="L96">    }</span>
+
+    public boolean isShutdown() {
+<span class="fc" id="L99">        return executorService.isShutdown();</span>
+    }
+
+    public List&lt;ScheduledTask&gt; getFailedTasks(boolean clearAfterwards) {
+<span class="fc" id="L103">        List&lt;ScheduledTask&gt; result = Collections.unmodifiableList(</span>
+<span class="fc bfc" id="L104" title="All 2 branches covered.">                clearAfterwards ? List.copyOf(failedTasks) : failedTasks);</span>
+<span class="fc bfc" id="L105" title="All 2 branches covered.">        if (clearAfterwards) failedTasks.clear();</span>
+<span class="fc" id="L106">        return result;</span>
+    }
+
+    public List&lt;ScheduledTask&gt; getScheduledTasks() {
+<span class="pc bpc" id="L110" title="1 of 2 branches missed.">        tasks = tasks.stream().filter(item -&gt; !item.shouldBeExecuted())</span>
+<span class="fc" id="L111">                .collect(Collectors.toList());</span>
+<span class="fc" id="L112">        return Collections.unmodifiableList(tasks);</span>
+    }
+
+    public boolean hasTask(int id) {
+<span class="pc bpc" id="L116" title="1 of 2 branches missed.">        return tasks.stream().anyMatch(i -&gt; i.getId() == id);</span>
+    }
+
+    public boolean cancel(int id) {
+<span class="pc bpc" id="L120" title="1 of 2 branches missed.">        Optional&lt;ScheduledTask&gt; task = tasks.stream().filter(i -&gt; i.getId() == id).findFirst();</span>
+
+<span class="fc" id="L122">        task.ifPresent(i -&gt; tasks.remove(i));</span>
+
+<span class="fc" id="L124">        return task.isPresent();</span>
+    }
+
+    public int cancel(int... ids) {
+<span class="fc" id="L128">        AtomicInteger result = new AtomicInteger();</span>
+<span class="fc bfc" id="L129" title="All 2 branches covered.">        for (int id : ids) {</span>
+<span class="pc bpc" id="L130" title="1 of 2 branches missed.">            if (cancel(id)) result.getAndIncrement();</span>
+        }
+<span class="fc" id="L132">        return result.get();</span>
+    }
+
+    public int cancel(List&lt;Integer&gt; taskIds) {
+<span class="fc" id="L136">        AtomicInteger result = new AtomicInteger();</span>
+<span class="fc" id="L137">        taskIds.forEach(i -&gt; {</span>
+<span class="pc bpc" id="L138" title="1 of 2 branches missed.">            if (cancel(i)) result.getAndIncrement();</span>
+<span class="fc" id="L139">        });</span>
+<span class="fc" id="L140">        return result.get();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

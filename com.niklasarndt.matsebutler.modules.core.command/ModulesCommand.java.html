@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ModulesCommand.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">MatseButler</a> &gt; <a href="index.source.html" class="el_package">com.niklasarndt.matsebutler.modules.core.command</a> &gt; <span class="el_source">ModulesCommand.java</span></div><h1>ModulesCommand.java</h1><pre class="source lang-java linenums">package com.niklasarndt.matsebutler.modules.core.command;
+
+import com.niklasarndt.matsebutler.modules.ButlerCommand;
+import com.niklasarndt.matsebutler.modules.ButlerContext;
+import com.niklasarndt.matsebutler.modules.ButlerModule;
+import com.niklasarndt.matsebutler.modules.ButlerModuleInformation;
+import com.niklasarndt.matsebutler.util.ButlerUtils;
+import net.dv8tion.jda.api.EmbedBuilder;
+
+import java.util.List;
+
+/**
+ * Created by Niklas on 2020/07/26.
+ */
+public class ModulesCommand extends ButlerCommand {
+
+    public ModulesCommand() {
+<span class="fc" id="L18">        super(&quot;modules&quot;, 0, 1, &quot;Provides a list of all modules.&quot;,</span>
+                false, &quot;module&quot;);
+<span class="fc" id="L20">    }</span>
+
+    @Override
+    public void execute(ButlerContext context) {
+<span class="nc bnc" id="L24" title="All 2 branches missed.">        if (context.args().length == 0) {</span>
+<span class="nc" id="L25">            buildOverview(context);</span>
+        } else {
+<span class="nc" id="L27">            String moduleName = context.args()[0];</span>
+
+<span class="nc" id="L29">            context.instance().getModuleManager().getModule(moduleName)</span>
+<span class="nc" id="L30">                    .ifPresentOrElse(module -&gt; buildModuleOverview(context, module),</span>
+<span class="nc" id="L31">                            () -&gt; context.resultBuilder()</span>
+<span class="nc" id="L32">                                    .notFound(&quot;Could not find module with name `%s`.&quot;,</span>
+                                            moduleName));
+        }
+<span class="nc" id="L35">    }</span>
+
+    private void buildModuleOverview(ButlerContext context, ButlerModule module) {
+<span class="nc" id="L38">        ButlerModuleInformation info = module.info();</span>
+<span class="nc" id="L39">        EmbedBuilder embed = context.resultBuilder().useEmbed();</span>
+<span class="nc" id="L40">        embed.setTitle(info.generateTitle());</span>
+
+<span class="nc" id="L42">        embed.addField(&quot;Command(s)&quot;, module.getCommandCount() + &quot;&quot;, true);</span>
+<span class="nc" id="L43">        embed.addField(&quot;Version&quot;, info.getVersion(), true);</span>
+<span class="nc" id="L44">        embed.addBlankField(false);</span>
+
+<span class="nc" id="L46">        module.getCommands().forEach(cmd -&gt;</span>
+<span class="nc" id="L47">                embed.addField(ButlerUtils.buildEmbedCommandInfo(cmd.info())));</span>
+<span class="nc" id="L48">    }</span>
+
+    private void buildOverview(ButlerContext context) {
+<span class="nc" id="L51">        List&lt;ButlerModule&gt; modules = context.instance().getModuleManager().getModules();</span>
+<span class="nc" id="L52">        EmbedBuilder embed = context.resultBuilder().useEmbed();</span>
+<span class="nc" id="L53">        embed.setFooter(modules.size() + &quot; modules loaded&quot;);</span>
+
+<span class="nc bnc" id="L55" title="All 2 branches missed.">        for (int i = 0; i &lt; modules.size(); i++) {</span>
+<span class="nc" id="L56">            ButlerModule module = modules.get(i);</span>
+<span class="nc" id="L57">            ButlerModuleInformation info = module.info();</span>
+<span class="nc" id="L58">            embed.addField(info.generateTitle(),</span>
+<span class="nc" id="L59">                    info.getDescription(), false);</span>
+<span class="nc" id="L60">            embed.addField(&quot;Command(s)&quot;, module.getCommandCount() + &quot;&quot;, true);</span>
+<span class="nc" id="L61">            embed.addField(&quot;Version&quot;, info.getVersion(), true);</span>
+<span class="nc bnc" id="L62" title="All 2 branches missed.">            if (i != modules.size() - 1) embed.addBlankField(false);</span>
+        }
+<span class="nc" id="L64">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

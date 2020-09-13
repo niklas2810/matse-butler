@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ResultBuilder.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">MatseButler</a> &gt; <a href="index.source.html" class="el_package">com.niklasarndt.matsebutler.util</a> &gt; <span class="el_source">ResultBuilder.java</span></div><h1>ResultBuilder.java</h1><pre class="source lang-java linenums">package com.niklasarndt.matsebutler.util;
+
+import com.niklasarndt.matsebutler.enums.ResultType;
+import com.niklasarndt.matsebutler.modules.ButlerModuleInformation;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.requests.restaction.MessageAction;
+
+/**
+ * Created by Niklas on 2020/07/25.
+ */
+public class ResultBuilder {
+
+<span class="fc" id="L15">    public static final ResultBuilder NOT_FOUND =</span>
+            new ResultBuilder(null, ResultType.NOT_FOUND, null);
+    private final ButlerModuleInformation currentModule;
+
+<span class="fc" id="L19">    private ResultType type = ResultType.SUCCESS;</span>
+    private String output;
+
+<span class="fc" id="L22">    private boolean usesEmbed = false;</span>
+    private EmbedBuilder embedBuilder;
+
+<span class="fc" id="L25">    public ResultBuilder(ButlerModuleInformation currentModule) {</span>
+<span class="fc" id="L26">        this.currentModule = currentModule;</span>
+<span class="fc" id="L27">    }</span>
+
+<span class="fc" id="L29">    public ResultBuilder(ButlerModuleInformation currentModule, ResultType type, String output) {</span>
+<span class="fc" id="L30">        this.currentModule = currentModule;</span>
+<span class="fc" id="L31">        this.type = type;</span>
+<span class="fc" id="L32">        this.output = output;</span>
+<span class="fc" id="L33">    }</span>
+
+    public ButlerModuleInformation getCurrentModule() {
+<span class="nc" id="L36">        return currentModule;</span>
+    }
+
+    public ResultType getType() {
+<span class="fc" id="L40">        return type;</span>
+    }
+
+    public void setType(ResultType type) {
+<span class="nc" id="L44">        this.type = type;</span>
+<span class="nc" id="L45">    }</span>
+
+    public String getOutput() {
+<span class="fc bfc" id="L48" title="All 2 branches covered.">        return output != null ? output : &quot;&quot;;</span>
+    }
+
+    public void invalidArgsLength(int min, int max, int actual) {
+<span class="fc" id="L52">        type = ResultType.ERROR;</span>
+<span class="pc bpc" id="L53" title="1 of 4 branches missed.">        if (min == max || min == 0) {</span>
+<span class="fc" id="L54">            output = String.format(&quot;This command does not accept parameters (you provided %d).&quot;,</span>
+<span class="fc" id="L55">                    actual);</span>
+        } else {
+<span class="fc" id="L57">            output = String.format(&quot;This command only accepts %d-%d parameters (you provided %d).&quot;,</span>
+<span class="fc" id="L58">                    min, max, actual);</span>
+        }
+<span class="fc" id="L60">    }</span>
+
+    public boolean hasOutput() {
+<span class="nc bnc" id="L63" title="All 8 branches missed.">        return (output != null &amp;&amp; output.length() &gt; 0) || usesEmbed &amp;&amp; !embedBuilder.isEmpty();</span>
+    }
+
+    public EmbedBuilder useEmbed() {
+<span class="fc" id="L67">        usesEmbed = true;</span>
+<span class="pc bpc" id="L68" title="1 of 2 branches missed.">        if (embedBuilder == null) embedBuilder = new EmbedBuilder();</span>
+<span class="fc" id="L69">        return embedBuilder;</span>
+    }
+
+    public String produceString(boolean addEmoji) {
+<span class="fc bfc" id="L73" title="All 2 branches covered.">        if (usesEmbed) return &quot;&quot;;</span>
+<span class="fc bfc" id="L74" title="All 2 branches covered.">        return (addEmoji ? type.emoji + &quot; &quot; : &quot;&quot;) + getOutput();</span>
+    }
+
+    public String produceString() {
+<span class="fc bfc" id="L78" title="All 2 branches covered.">        return produceString(type != ResultType.SUCCESS);</span>
+    }
+
+    public MessageEmbed produceEmbed() {
+<span class="fc bfc" id="L82" title="All 2 branches covered.">        return usesEmbed ? embedBuilder.build() : null;</span>
+    }
+
+    public void produceIntoChannel(MessageChannel channel) {
+        MessageAction action;
+<span class="nc bnc" id="L87" title="All 2 branches missed.">        if (usesEmbed) {</span>
+<span class="nc" id="L88">            MessageEmbed result = produceEmbed();</span>
+<span class="nc bnc" id="L89" title="All 2 branches missed.">            if (!result.isSendable()) {</span>
+<span class="nc" id="L90">                throw new IllegalArgumentException(</span>
+<span class="nc" id="L91">                        String.format(&quot;The produced result is too long to be sent &quot; +</span>
+                                        &quot;(length: %s, max allowed: %s).&quot;,
+<span class="nc" id="L93">                                result.getLength(), MessageEmbed.EMBED_MAX_LENGTH_BOT));</span>
+<span class="nc" id="L94">            } else action = channel.sendMessage(produceEmbed());</span>
+<span class="nc" id="L95">        } else action = channel.sendMessage(produceString());</span>
+
+        //Deletion hint
+<span class="nc" id="L98">        action.queue();</span>
+<span class="nc" id="L99">    }</span>
+
+    public void success(String output) {
+<span class="fc" id="L102">        this.type = ResultType.SUCCESS;</span>
+<span class="fc" id="L103">        this.output = output;</span>
+<span class="fc" id="L104">    }</span>
+
+    public void success(String output, Object... args) {
+<span class="nc" id="L107">        success(String.format(output, args));</span>
+<span class="nc" id="L108">    }</span>
+
+    public void error(String output) {
+<span class="fc" id="L111">        type = ResultType.ERROR;</span>
+<span class="fc" id="L112">        this.output = output;</span>
+<span class="fc" id="L113">    }</span>
+
+    public void error(String output, Object... args) {
+<span class="nc" id="L116">        error(String.format(output, args));</span>
+<span class="nc" id="L117">    }</span>
+
+    public void error(Exception exception) {
+<span class="nc" id="L120">        error(&quot;The command could not be executed. Reason: **%s** - %s&quot;,</span>
+<span class="nc" id="L121">                exception.getClass().getSimpleName(), exception.getMessage());</span>
+<span class="nc" id="L122">    }</span>
+
+    public void notFound(String output) {
+<span class="nc" id="L125">        this.type = ResultType.NOT_FOUND;</span>
+<span class="nc" id="L126">        this.output = output;</span>
+<span class="nc" id="L127">    }</span>
+
+    public void notFound(String output, Object... args) {
+<span class="nc" id="L130">        notFound(String.format(output, args));</span>
+<span class="nc" id="L131">    }</span>
+
+    public void warn(String output) {
+<span class="nc" id="L134">        this.type = ResultType.WARNING;</span>
+<span class="nc" id="L135">        this.output = output;</span>
+<span class="nc" id="L136">    }</span>
+
+    public void warn(String output, Object... args) {
+<span class="nc" id="L139">        warn(String.format(output, args));</span>
+<span class="nc" id="L140">    }</span>
+
+    public void unauthorized(String output) {
+<span class="nc" id="L143">        this.type = ResultType.UNAUTHORIZED;</span>
+<span class="nc" id="L144">        this.output = output;</span>
+<span class="nc" id="L145">    }</span>
+
+    public void unauthorized(String output, Object... args) {
+<span class="nc" id="L148">        unauthorized(String.format(output, args));</span>
+<span class="nc" id="L149">    }</span>
+
+    public void denyAccess() {
+<span class="nc" id="L152">        unauthorized(&quot;You are not permitted to execute this command.&quot;);</span>
+<span class="nc" id="L153">    }</span>
+
+    public void output(ResultBuilder other) {
+<span class="fc" id="L156">        this.type = other.type;</span>
+<span class="fc" id="L157">        this.output = other.output;</span>
+<span class="fc" id="L158">        this.usesEmbed = other.usesEmbed;</span>
+<span class="fc" id="L159">        this.embedBuilder = other.embedBuilder;</span>
+<span class="fc" id="L160">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

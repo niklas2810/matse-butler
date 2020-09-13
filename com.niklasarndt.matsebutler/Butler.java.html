@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Butler.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">MatseButler</a> &gt; <a href="index.source.html" class="el_package">com.niklasarndt.matsebutler</a> &gt; <span class="el_source">Butler.java</span></div><h1>Butler.java</h1><pre class="source lang-java linenums">package com.niklasarndt.matsebutler;
+
+import com.niklasarndt.matsebutler.config.Configuration;
+import com.niklasarndt.matsebutler.config.ConfigurationManager;
+import com.niklasarndt.matsebutler.listener.ApiListener;
+import com.niklasarndt.matsebutler.listener.MessageListener;
+import com.niklasarndt.matsebutler.listener.ReactionListener;
+import com.niklasarndt.matsebutler.scheduler.ScheduleManager;
+import com.niklasarndt.matsebutler.util.ButlerUtils;
+import com.niklasarndt.matsebutler.util.ExecutionFlags;
+import io.sentry.Sentry;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.utils.cache.CacheFlag;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import javax.security.auth.login.LoginException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
+/**
+ * Created by Niklas on 2020/07/24.
+ */
+public class Butler {
+
+<span class="fc" id="L29">    private static final Logger logger = LoggerFactory.getLogger(Butler.class);</span>
+<span class="fc" id="L30">    private final long startupTimestamp = System.currentTimeMillis();</span>
+    private final List&lt;ExecutionFlags&gt; flags;
+    private JDA jda;
+    private ModuleManager moduleManager;
+    private ScheduleManager scheduleManager;
+    private ConfigurationManager configManager;
+
+    protected Butler() throws LoginException {
+<span class="nc" id="L38">        this(ExecutionFlags.NONE);</span>
+<span class="nc" id="L39">    }</span>
+
+    protected Butler(String... flags) throws LoginException {
+<span class="fc" id="L42">        this(Arrays.stream(flags)</span>
+<span class="fc" id="L43">                .map(el -&gt; ButlerUtils.parseInt(el, 0))</span>
+<span class="fc" id="L44">                .toArray(Integer[]::new));</span>
+<span class="fc" id="L45">    }</span>
+
+    protected Butler(Integer... flags) throws LoginException {
+<span class="fc" id="L48">        this(ExecutionFlags.getFlagsById(flags));</span>
+<span class="fc" id="L49">    }</span>
+
+<span class="fc" id="L51">    protected Butler(ExecutionFlags... flags) throws LoginException {</span>
+<span class="fc" id="L52">        logger.info(&quot;Startup is in progress&quot;);</span>
+<span class="fc" id="L53">        this.flags = Collections.unmodifiableList(List.of(flags));</span>
+<span class="fc" id="L54">        this.configManager = new ConfigurationManager();</span>
+
+<span class="pc bpc" id="L56" title="1 of 2 branches missed.">        if (configManager.getConfig().getSentryKey() != null) {</span>
+<span class="nc" id="L57">            logger.info(&quot;Using sentry key specified in the configuration file&quot;);</span>
+
+<span class="nc" id="L59">            Sentry.init(configManager.getConfig().getSentryKey());</span>
+        }
+
+<span class="pc bpc" id="L62" title="1 of 2 branches missed.">        if (hasFlag(ExecutionFlags.NO_API_CONNECTION)) {</span>
+<span class="fc" id="L63">            logger.warn(&quot;NO_API_CONNECTION: App will not be kept alive by daemon.&quot;);</span>
+        } else {
+<span class="nc" id="L65">            jda = setUpJda();</span>
+<span class="nc" id="L66">            logger.info(&quot;JDA has been set up!&quot;);</span>
+        }
+
+<span class="pc bpc" id="L69" title="1 of 2 branches missed.">        if (!hasFlag(ExecutionFlags.NO_MODULE_MANAGER)) {</span>
+<span class="fc" id="L70">            moduleManager = new ModuleManager(this);</span>
+<span class="fc" id="L71">            moduleManager.loadAll();</span>
+<span class="fc" id="L72">            logger.info(&quot;Module manager has been set up!&quot;);</span>
+        }
+
+<span class="pc bpc" id="L75" title="1 of 2 branches missed.">        if (!hasFlag(ExecutionFlags.NO_SCHEDULE_MANAGER)) {</span>
+<span class="fc" id="L76">            scheduleManager = new ScheduleManager(this);</span>
+<span class="fc" id="L77">            logger.info(&quot;Schedule manager has been set up!&quot;);</span>
+        }
+
+<span class="fc" id="L80">        logger.info(&quot;SUCCESS: SETUP COMPLETE&quot;);</span>
+<span class="fc" id="L81">        logger.info(&quot;EXEC FLAGS: {}&quot;, ExecutionFlags.prettyPrint(</span>
+<span class="fc" id="L82">                this.flags.toArray(new ExecutionFlags[0])));</span>
+<span class="fc" id="L83">    }</span>
+
+    public static void main(String[] args) {
+<span class="pc bpc" id="L86" title="2 of 4 branches missed.">        if (System.getenv(&quot;SENTRY_DSN&quot;) != null || System.getProperty(&quot;sentry.dsn&quot;) != null) {</span>
+
+<span class="nc" id="L88">            Sentry.init();</span>
+<span class="nc" id="L89">            logger.info(&quot;Has Sentry been initialized correctly? {}&quot;, Sentry.isInitialized());</span>
+        }
+
+        try {
+<span class="fc" id="L93">            new Butler(buildEnvironmentFlags(args));</span>
+<span class="nc" id="L94">        } catch (Exception e) {</span>
+<span class="nc" id="L95">            logger.error(&quot;Encountered uncaught exception&quot;, e);</span>
+<span class="nc" id="L96">            logger.error(&quot;This fatal exception will lead to an application shutdown.&quot;);</span>
+<span class="nc" id="L97">            System.exit(1);</span>
+<span class="fc" id="L98">        }</span>
+<span class="fc" id="L99">    }</span>
+
+    private static String[] buildEnvironmentFlags(String[] args) {
+<span class="fc" id="L102">        String[] envs = Optional.ofNullable(System.getenv(&quot;EXECUTION_FLAGS&quot;))</span>
+<span class="fc" id="L103">                .orElse(&quot;&quot;).split(&quot;,&quot;);</span>
+<span class="pc bpc" id="L104" title="2 of 4 branches missed.">        boolean oneOnly = envs.length == 0 || args.length == 0;</span>
+
+        String[] combined;
+<span class="pc bpc" id="L107" title="3 of 4 branches missed.">        if (oneOnly) combined = envs.length != 0 ? envs : args;</span>
+<span class="fc" id="L108">        else combined = new String[envs.length + args.length];</span>
+
+<span class="pc bpc" id="L110" title="1 of 2 branches missed.">        if (!oneOnly) {</span>
+<span class="fc" id="L111">            System.arraycopy(envs, 0, combined, 0, envs.length);</span>
+<span class="fc" id="L112">            System.arraycopy(args, 0, combined, envs.length, args.length);</span>
+        }
+<span class="fc" id="L114">        return combined;</span>
+    }
+
+    /**
+     * Sets up the JDA instance.
+     *
+     * @return The completely initialized JDA instance.
+     * @throws LoginException Will cause a shutdown + sentry log.
+     */
+    private JDA setUpJda() throws LoginException {
+<span class="nc" id="L124">        final JDABuilder builder = JDABuilder.create(getToken(),</span>
+                GatewayIntent.DIRECT_MESSAGES, GatewayIntent.DIRECT_MESSAGE_REACTIONS,
+                GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MESSAGE_REACTIONS);
+
+
+<span class="nc" id="L129">        builder.addEventListeners(new ApiListener(this),</span>
+                new MessageListener(this), new ReactionListener(this));
+<span class="nc" id="L131">        builder.disableCache(CacheFlag.ACTIVITY, CacheFlag.VOICE_STATE,</span>
+                CacheFlag.EMOTE, CacheFlag.CLIENT_STATUS);
+<span class="nc" id="L133">        return builder.build();</span>
+    }
+
+    public JDA getJda() {
+<span class="fc" id="L137">        return jda;</span>
+    }
+
+    public long getStartupTimestamp() {
+<span class="fc" id="L141">        return startupTimestamp;</span>
+    }
+
+    public ModuleManager getModuleManager() {
+<span class="fc" id="L145">        return moduleManager;</span>
+    }
+
+    public ScheduleManager getScheduleManager() {
+<span class="nc" id="L149">        return scheduleManager;</span>
+    }
+
+    public ConfigurationManager getConfigManager() {
+<span class="nc" id="L153">        return configManager;</span>
+    }
+
+    public Configuration getConfig() {
+<span class="fc" id="L157">        return configManager.getConfig();</span>
+    }
+
+    public long getGuild() {
+<span class="nc" id="L161">        return getConfig().getGuild();</span>
+    }
+
+    public String getToken() {
+<span class="nc" id="L165">        return getConfig().getToken();</span>
+    }
+
+    public boolean isAdmin(long id) {
+<span class="nc" id="L169">        return getConfig().isAdmin(id);</span>
+    }
+
+    public List&lt;ExecutionFlags&gt; getFlags() {
+<span class="fc" id="L173">        return flags;</span>
+    }
+
+    public boolean hasFlag(int flagId) {
+<span class="fc" id="L177">        return hasFlag(ExecutionFlags.getFlagById(flagId));</span>
+    }
+
+    public boolean hasFlag(ExecutionFlags flag) {
+<span class="fc" id="L181">        return flags.contains(flag);</span>
+    }
+
+    public void shutdown(int exitCode) {
+<span class="nc" id="L185">        new Thread(null, () -&gt; {</span>
+<span class="nc" id="L186">            logger.info(&quot;Shutdown in 5 seconds!&quot;);</span>
+            try {
+<span class="nc" id="L188">                Thread.sleep(5000);</span>
+<span class="nc" id="L189">            } catch (InterruptedException e) {</span>
+<span class="nc" id="L190">                e.printStackTrace();</span>
+<span class="nc" id="L191">            }</span>
+<span class="nc" id="L192">            logger.info(&quot;Initiating shutdown...&quot;);</span>
+
+<span class="nc" id="L194">            moduleManager.unloadAll();</span>
+<span class="nc" id="L195">            jda.shutdown();</span>
+<span class="nc" id="L196">            logger.info(&quot;The connection to the Discord API was shut down. Goodbye!&quot;);</span>
+<span class="nc" id="L197">            System.exit(exitCode);</span>
+<span class="nc" id="L198">        }, &quot;terminator&quot;).start();</span>
+<span class="nc" id="L199">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

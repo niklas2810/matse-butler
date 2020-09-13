@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ModuleManager.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">MatseButler</a> &gt; <a href="index.source.html" class="el_package">com.niklasarndt.matsebutler</a> &gt; <span class="el_source">ModuleManager.java</span></div><h1>ModuleManager.java</h1><pre class="source lang-java linenums">package com.niklasarndt.matsebutler;
+
+import com.niklasarndt.matsebutler.modules.ButlerCommand;
+import com.niklasarndt.matsebutler.modules.ButlerContext;
+import com.niklasarndt.matsebutler.modules.ButlerModule;
+import com.niklasarndt.matsebutler.util.ResultBuilder;
+import net.dv8tion.jda.api.entities.Message;
+import org.reflections.Reflections;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+
+
+/**
+ * Created by Niklas on 2020/07/25.
+ */
+public class ModuleManager {
+
+<span class="fc" id="L24">    private static final Logger logger = LoggerFactory.getLogger(ModuleManager.class);</span>
+
+    private final Butler instance;
+<span class="fc" id="L27">    private final List&lt;ButlerModule&gt; modules = new ArrayList&lt;&gt;();</span>
+    private String mostRecentMessage;
+
+<span class="fc" id="L30">    public ModuleManager(Butler instance) {</span>
+<span class="fc" id="L31">        this.instance = instance;</span>
+<span class="fc" id="L32">    }</span>
+
+    public void loadAll() {
+<span class="fc" id="L35">        unloadAll();</span>
+<span class="fc" id="L36">        final Set&lt;Class&lt;? extends ButlerModule&gt;&gt; classes =</span>
+                new Reflections(&quot;com.niklasarndt.matsebutler.modules&quot;)
+<span class="fc" id="L38">                        .getSubTypesOf(ButlerModule.class);</span>
+
+<span class="fc" id="L40">        classes.forEach(item -&gt; {</span>
+            try {
+<span class="fc" id="L42">                final ButlerModule module = item.getDeclaredConstructor().newInstance();</span>
+<span class="fc" id="L43">                registerModule(module);</span>
+<span class="nc" id="L44">            } catch (Exception e) {</span>
+<span class="nc" id="L45">                logger.error(&quot;Unable to register module \&quot;{}\&quot;&quot;, item.getSimpleName(), e);</span>
+<span class="fc" id="L46">            }</span>
+<span class="fc" id="L47">        });</span>
+<span class="fc" id="L48">        logger.info(&quot;{} modules loaded.&quot;, modules.size());</span>
+<span class="fc" id="L49">        logger.info(&quot;{} commands registered.&quot;, getCommandCount());</span>
+<span class="fc" id="L50">    }</span>
+
+    public void unloadAll() {
+<span class="fc" id="L53">        modules.forEach(mod -&gt; unregisterModule(mod, false));</span>
+<span class="fc" id="L54">        modules.clear();</span>
+<span class="fc" id="L55">        logger.info(&quot;Unloaded all modules.&quot;);</span>
+<span class="fc" id="L56">    }</span>
+
+    public void registerModule(ButlerModule module) {
+<span class="fc bfc" id="L59" title="All 2 branches covered.">        if (hasModule(module.info().getName())) {</span>
+<span class="fc" id="L60">            throw new IllegalStateException(String.format(&quot;There's already a module &quot; +</span>
+<span class="fc" id="L61">                    &quot;claiming the name \&quot;%s\&quot;.&quot;, module.info().getName()));</span>
+        }
+<span class="fc" id="L63">        modules.add(module);</span>
+<span class="fc" id="L64">        module.onStartup(instance);</span>
+<span class="fc" id="L65">    }</span>
+
+    public void unregisterModule(String name) {
+<span class="fc" id="L68">        unregisterModule(modules.stream()</span>
+<span class="fc" id="L69">                .filter(item -&gt; item.info().getName().equals(name)).findFirst().orElse(null));</span>
+<span class="fc" id="L70">    }</span>
+
+    public void unregisterModule(ButlerModule module) {
+<span class="fc" id="L73">        unregisterModule(module, true);</span>
+<span class="fc" id="L74">    }</span>
+
+    public void unregisterModule(ButlerModule module, boolean removeFromList) {
+<span class="pc bpc" id="L77" title="2 of 4 branches missed.">        if (module == null || !hasModule(module)) return;</span>
+
+<span class="fc" id="L79">        module.onShutdown();</span>
+<span class="fc bfc" id="L80" title="All 2 branches covered.">        if (removeFromList) modules.remove(module);</span>
+<span class="fc" id="L81">    }</span>
+
+    private boolean hasModule(String name) {
+<span class="fc" id="L84">        return modules.stream().anyMatch(item -&gt; item.info().getName().equals(name));</span>
+    }
+
+    private boolean hasModule(ButlerModule module) {
+<span class="fc" id="L88">        return modules.contains(module);</span>
+    }
+
+    public ResultBuilder execute(Message message) {
+<span class="nc" id="L92">        return execute(message.getContentRaw(), message);</span>
+    }
+
+    public ResultBuilder execute(String content, Message origin) {
+<span class="fc" id="L96">        String[] parts = content.split(&quot; &quot;);</span>
+<span class="fc" id="L97">        String name = parts[0].toLowerCase();</span>
+<span class="fc" id="L98">        String[] args = Arrays.copyOfRange(parts, 1, parts.length);</span>
+
+
+<span class="fc" id="L101">        Optional&lt;ButlerCommand&gt; command = findCommand(name);</span>
+
+<span class="fc bfc" id="L103" title="All 2 branches covered.">        if (command.isPresent()) {</span>
+<span class="fc" id="L104">            ButlerCommand cmd = command.get();</span>
+
+<span class="fc" id="L106">            ButlerContext context = new ButlerContext(instance, origin, name, args,</span>
+<span class="fc" id="L107">                    new ResultBuilder(command.get().module().info()));</span>
+
+<span class="fc bfc" id="L109" title="All 4 branches covered.">            if (args.length &lt; cmd.info().getArgsMin() || args.length &gt; cmd.info().getArgsMax()) {</span>
+
+<span class="fc" id="L111">                context.resultBuilder().invalidArgsLength(</span>
+<span class="fc" id="L112">                        cmd.info().getArgsMin(), cmd.info().getArgsMax(), args.length);</span>
+<span class="pc bpc" id="L113" title="1 of 2 branches missed.">            } else if (origin != null</span>
+<span class="nc bnc" id="L114" title="All 2 branches missed.">                    &amp;&amp; cmd.info().requiresPrivileges()</span>
+<span class="nc bnc" id="L115" title="All 2 branches missed.">                    &amp;&amp; !instance.isAdmin(origin.getAuthor().getIdLong())) {</span>
+
+<span class="nc" id="L117">                context.resultBuilder().denyAccess();</span>
+            } else {
+                try {
+<span class="fc" id="L120">                    cmd.execute(context);</span>
+<span class="nc" id="L121">                } catch (Exception e) {</span>
+<span class="nc" id="L122">                    logger.error(&quot;Could not execute command '{}' (module: {})&quot;,</span>
+<span class="nc" id="L123">                            name, cmd.module().info().getName(), e);</span>
+<span class="nc" id="L124">                    context.resultBuilder().error(e);</span>
+<span class="fc" id="L125">                }</span>
+            }
+
+<span class="fc" id="L128">            return context.resultBuilder();</span>
+<span class="fc" id="L129">        } else return ResultBuilder.NOT_FOUND;</span>
+    }
+
+    public List&lt;ButlerModule&gt; getModules() {
+<span class="fc" id="L133">        return Collections.unmodifiableList(modules);</span>
+    }
+
+    public Optional&lt;ButlerCommand&gt; findCommand(String name) {
+<span class="fc" id="L137">        return modules.stream()</span>
+<span class="fc" id="L138">                .map(m -&gt; m.getCommand(name)).flatMap(Optional::stream)</span>
+<span class="fc" id="L139">                .findFirst();</span>
+    }
+
+    private int getCommandCount() {
+<span class="fc" id="L143">        return modules.stream().mapToInt(ButlerModule::getCommandCount).sum();</span>
+    }
+
+    public Optional&lt;ButlerModule&gt; getModule(String name) {
+<span class="fc" id="L147">        return modules.stream().filter(m -&gt; m.info().getName().equals(name)).findFirst();</span>
+    }
+
+    public String getMostRecentMessage() {
+<span class="nc" id="L151">        return mostRecentMessage;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

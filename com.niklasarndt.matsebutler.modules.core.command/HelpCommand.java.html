@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>HelpCommand.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">MatseButler</a> &gt; <a href="index.source.html" class="el_package">com.niklasarndt.matsebutler.modules.core.command</a> &gt; <span class="el_source">HelpCommand.java</span></div><h1>HelpCommand.java</h1><pre class="source lang-java linenums">package com.niklasarndt.matsebutler.modules.core.command;
+
+import com.niklasarndt.matsebutler.modules.ButlerCommand;
+import com.niklasarndt.matsebutler.modules.ButlerCommandInformation;
+import com.niklasarndt.matsebutler.modules.ButlerContext;
+import com.niklasarndt.matsebutler.modules.ButlerModule;
+import com.niklasarndt.matsebutler.util.ButlerUtils;
+import net.dv8tion.jda.api.EmbedBuilder;
+
+import java.util.List;
+import java.util.Optional;
+
+/**
+ * Created by Niklas on 2020/07/26.
+ */
+public class HelpCommand extends ButlerCommand {
+
+    public HelpCommand() {
+<span class="fc" id="L19">        super(&quot;help&quot;, 0, 1,</span>
+                &quot;Provides a command overview. Use \&quot;help help\&quot; for more details.&quot;,
+                false, &quot;commands&quot;, &quot;cmds&quot;);
+<span class="fc" id="L22">    }</span>
+
+    @Override
+    public void execute(ButlerContext context) {
+<span class="nc bnc" id="L26" title="All 2 branches missed.">        if (context.args().length == 0) {</span>
+<span class="nc" id="L27">            buildOverview(context);</span>
+        } else {
+<span class="nc" id="L29">            buildDetails(context);</span>
+        }
+<span class="nc" id="L31">    }</span>
+
+    private void buildDetails(ButlerContext context) {
+<span class="nc" id="L34">        Optional&lt;ButlerCommand&gt; command = context.instance()</span>
+<span class="nc" id="L35">                .getModuleManager().findCommand(context.args()[0]);</span>
+
+<span class="nc bnc" id="L37" title="All 2 branches missed.">        if (command.isEmpty()) {</span>
+<span class="nc" id="L38">            context.resultBuilder().notFound(&quot;Could not find a command matching `%s`.&quot;,</span>
+<span class="nc" id="L39">                    context.args()[0]);</span>
+<span class="nc" id="L40">            return;</span>
+        }
+
+<span class="nc" id="L43">        EmbedBuilder embed = context.resultBuilder().useEmbed();</span>
+<span class="nc" id="L44">        buildEmbedInfo(embed, command.get());</span>
+<span class="nc" id="L45">    }</span>
+
+    private void buildEmbedInfo(EmbedBuilder embed, ButlerCommand command) {
+<span class="nc" id="L48">        ButlerCommandInformation info = command.info();</span>
+
+<span class="nc" id="L50">        embed.setTitle(&quot;Overview for command `&quot; + info.getName() + &quot;`&quot;);</span>
+<span class="nc" id="L51">        embed.addField(&quot;Module&quot;, String.format(&quot;%s %s&quot;, command.module().info().getEmoji(),</span>
+<span class="nc" id="L52">                command.module().info().getDisplayName()), false);</span>
+<span class="nc" id="L53">        embed.addField(&quot;Description&quot;, info.getDescription(), false);</span>
+
+<span class="nc bnc" id="L55" title="All 2 branches missed.">        embed.addField(&quot;Aliases&quot;, info.getAliases().length == 0</span>
+<span class="nc" id="L56">                ? &quot;None&quot; : String.join(&quot;, &quot;, info.getAliases()), true);</span>
+
+        String args;
+<span class="nc bnc" id="L59" title="All 2 branches missed.">        if (info.getArgsMin() != info.getArgsMax()) { //Parameter range</span>
+<span class="nc" id="L60">            args = info.getArgsMin() + &quot;-&quot; + info.getArgsMax();</span>
+        } else { //Fixed parameter count
+<span class="nc bnc" id="L62" title="All 2 branches missed.">            args = info.getArgsMin() == 0 ? &quot;None&quot; : info.getArgsMin() + &quot;&quot;;</span>
+        }
+<span class="nc" id="L64">        embed.addField(&quot;Parameters&quot;, args, true);</span>
+<span class="nc" id="L65">    }</span>
+
+    private void buildOverview(ButlerContext context) {
+<span class="nc" id="L68">        List&lt;ButlerModule&gt; modules = context.instance().getModuleManager().getModules();</span>
+
+<span class="nc" id="L70">        StringBuilder builder = new StringBuilder();</span>
+<span class="nc" id="L71">        modules.forEach(module -&gt; {</span>
+<span class="nc" id="L72">            builder.append(String.format(&quot;%s\n\n&quot;,</span>
+<span class="nc" id="L73">                    module.info().generateTitle()));</span>
+
+<span class="nc bnc" id="L75" title="All 2 branches missed.">            if (module.getCommandCount() == 0) {</span>
+<span class="nc" id="L76">                builder.append(&quot;This module does not contain any commands.\n&quot;);</span>
+<span class="nc" id="L77">            } else module.getCommands().forEach(cmd -&gt; {</span>
+<span class="nc" id="L78">                ButlerCommandInformation cmdInfo = cmd.info();</span>
+<span class="nc" id="L79">                builder.append(ButlerUtils.buildShortCommandInfo(cmdInfo)).append(&quot;\n&quot;);</span>
+<span class="nc" id="L80">            });</span>
+
+<span class="nc" id="L82">            builder.append(&quot;\n&quot;);</span>
+<span class="nc" id="L83">        });</span>
+<span class="nc" id="L84">        context.resultBuilder().success(builder.toString().trim());</span>
+<span class="nc" id="L85">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

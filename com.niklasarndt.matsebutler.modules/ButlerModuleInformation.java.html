@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ButlerModuleInformation.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">MatseButler</a> &gt; <a href="index.source.html" class="el_package">com.niklasarndt.matsebutler.modules</a> &gt; <span class="el_source">ButlerModuleInformation.java</span></div><h1>ButlerModuleInformation.java</h1><pre class="source lang-java linenums">package com.niklasarndt.matsebutler.modules;
+
+import com.niklasarndt.matsebutler.util.Emojis;
+import java.util.Objects;
+
+/**
+ * Created by Niklas on 2020/07/25.
+ */
+public class ButlerModuleInformation {
+
+<span class="fc" id="L11">    protected static final String DEFAULT_EMOJI = Emojis.QUESTION_MARK;</span>
+
+    private final String emoji;
+    private final String name;
+    private final String displayName;
+    private final String description;
+    private final String version;
+
+    protected ButlerModuleInformation(String name) {
+<span class="nc" id="L20">        this(name, null);</span>
+<span class="nc" id="L21">    }</span>
+
+    protected ButlerModuleInformation(String name, String description) {
+<span class="fc" id="L24">        this(name, description, null);</span>
+<span class="fc" id="L25">    }</span>
+
+    protected ButlerModuleInformation(String name, String description, String version) {
+<span class="fc" id="L28">        this(null, name, null, description, version);</span>
+<span class="fc" id="L29">    }</span>
+
+    protected ButlerModuleInformation(String emoji, String name, String displayName,
+<span class="fc" id="L32">                                      String description, String version) {</span>
+<span class="fc" id="L33">        Objects.requireNonNull(name);</span>
+
+<span class="fc bfc" id="L35" title="All 2 branches covered.">        this.emoji = emoji != null ? emoji : DEFAULT_EMOJI;</span>
+<span class="fc" id="L36">        this.name = name;</span>
+<span class="fc bfc" id="L37" title="All 2 branches covered.">        this.displayName = displayName != null ? displayName : name;</span>
+<span class="fc bfc" id="L38" title="All 2 branches covered.">        this.description = description != null ? description : &quot;n/a&quot;;</span>
+<span class="fc bfc" id="L39" title="All 2 branches covered.">        this.version = version != null ? version : &quot;n/a&quot;;</span>
+
+<span class="fc" id="L41">        applyLimits();</span>
+<span class="fc" id="L42">    }</span>
+
+    private void applyLimits() {
+<span class="pc bpc" id="L45" title="1 of 4 branches missed.">        if (this.name.length() == 0 || this.displayName.length() == 0) {</span>
+<span class="fc" id="L46">            throw new IllegalArgumentException(&quot;Both module name and display name must &quot; +</span>
+                    &quot;not be null.&quot;);
+        }
+<span class="fc bfc" id="L49" title="All 2 branches covered.">        if (this.description.length() == 0) {</span>
+<span class="fc" id="L50">            throw new IllegalArgumentException(&quot;The module description must not be null.&quot;);</span>
+        }
+<span class="fc bfc" id="L52" title="All 2 branches covered.">        if (!Emojis.isOnlyEmojis(this.emoji)) {</span>
+<span class="fc" id="L53">            throw new IllegalArgumentException(String.format(</span>
+                    &quot;The emoji for the module '%s' is invalid.&quot;, name));
+        }
+<span class="fc" id="L56">        checkLengths();</span>
+<span class="fc" id="L57">    }</span>
+
+    private void checkLengths() {
+<span class="pc bpc" id="L60" title="1 of 2 branches missed.">        if (this.emoji.length() &gt; 4) {</span>
+<span class="nc" id="L61">            throw new IllegalArgumentException(String.format(</span>
+                    &quot;The emoji unicode for the module '%s' is too long &quot; +
+                            &quot;(max: 4 characters, given: %d characters).&quot;,
+<span class="nc" id="L64">                    name, this.emoji.length()));</span>
+        }
+<span class="pc bpc" id="L66" title="1 of 2 branches missed.">        if (this.name.length() &gt; 16) {</span>
+<span class="nc" id="L67">            throw new IllegalArgumentException(String.format(</span>
+                    &quot;The module name '%s' is too long &quot; +
+                            &quot;(max: 16 characters, given: %d characters).&quot;,
+<span class="nc" id="L70">                    name, this.name.length()));</span>
+        }
+<span class="pc bpc" id="L72" title="1 of 2 branches missed.">        if (this.displayName.length() &gt; 32) {</span>
+<span class="nc" id="L73">            throw new IllegalArgumentException(String.format(</span>
+                    &quot;The display name for the module '%s' is too long &quot; +
+                            &quot;(max: 32 characters, given: %d characters).&quot;,
+<span class="nc" id="L76">                    name, this.displayName.length()));</span>
+        }
+<span class="pc bpc" id="L78" title="1 of 2 branches missed.">        if (this.description.length() &gt; 128) {</span>
+<span class="nc" id="L79">            throw new IllegalArgumentException(String.format(</span>
+                    &quot;The description for the module '%s' is too long &quot; +
+                            &quot;(max: 128 characters, given: %d characters).&quot;,
+<span class="nc" id="L82">                    name, this.description.length()));</span>
+        }
+<span class="pc bpc" id="L84" title="1 of 2 branches missed.">        if (this.version.length() &gt; 8) {</span>
+<span class="nc" id="L85">            throw new IllegalArgumentException(String.format(</span>
+                    &quot;The version code for the module '%s' is too long &quot; +
+                            &quot;(max: 8 characters, given: %d characters).&quot;,
+<span class="nc" id="L88">                    name, this.version.length()));</span>
+        }
+<span class="fc" id="L90">    }</span>
+
+    public String getEmoji() {
+<span class="fc" id="L93">        return emoji;</span>
+    }
+
+    public String getName() {
+<span class="fc" id="L97">        return name;</span>
+    }
+
+    public String getDisplayName() {
+<span class="fc" id="L101">        return displayName;</span>
+    }
+
+    public String getDescription() {
+<span class="nc" id="L105">        return description;</span>
+    }
+
+    public String getVersion() {
+<span class="nc" id="L109">        return version;</span>
+    }
+
+    public String generateTitle() {
+<span class="fc" id="L113">        return String.format(&quot;%s **%s** (_%s_)&quot;, getEmoji(), getDisplayName(), getName());</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

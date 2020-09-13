@@ -1,0 +1,41 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+MatseButler,com.niklasarndt.matsebutler.modules.core,CoreModule,0,8,0,0,0,2,0,1,0,1
+MatseButler,com.niklasarndt.matsebutler.modules.timetable.command,TimetableCommand,163,10,26,0,40,2,14,1,1,1
+MatseButler,com.niklasarndt.matsebutler.enums,ResultType,0,67,0,0,0,7,0,2,0,2
+MatseButler,com.niklasarndt.matsebutler.modules.core.command,UptimeCommand,20,10,0,0,4,2,1,1,1,1
+MatseButler,com.niklasarndt.matsebutler.modules.core.command,PingCommand,30,11,2,0,4,2,2,1,1,1
+MatseButler,com.niklasarndt.matsebutler.modules.core.command,ModulesCommand,151,14,6,0,29,2,9,1,6,1
+MatseButler,com.niklasarndt.matsebutler.modules.core.command,HelpCommand,193,18,12,0,40,2,12,1,6,1
+MatseButler,com.niklasarndt.matsebutler.modules.core.command,VersionCommand,116,18,2,0,18,2,2,1,1,1
+MatseButler,com.niklasarndt.matsebutler.modules.core.command,RestartCommand,9,8,0,0,3,2,1,1,1,1
+MatseButler,com.niklasarndt.matsebutler.modules.core.command,ReloadCommand,5,8,0,0,2,2,1,1,1,1
+MatseButler,com.niklasarndt.matsebutler.modules.core.command,ShutdownCommand,9,16,0,0,3,2,1,1,1,1
+MatseButler,com.niklasarndt.matsebutler.modules.timetable.model,TimetableEntry,202,0,18,0,44,0,24,0,15,0
+MatseButler,com.niklasarndt.matsebutler.modules.timetable.model,Location,15,0,0,0,5,0,5,0,5,0
+MatseButler,com.niklasarndt.matsebutler.modules.timetable.model,Lecturer,9,0,0,0,3,0,3,0,3,0
+MatseButler,com.niklasarndt.matsebutler.modules.fun,FunModule,0,8,0,0,0,2,0,1,0,1
+MatseButler,com.niklasarndt.matsebutler.modules.timetable,DateUtils.new Pair() {...},26,0,0,0,3,0,3,0,3,0
+MatseButler,com.niklasarndt.matsebutler.modules.timetable,TimetableModule,8,19,0,0,3,5,3,1,3,1
+MatseButler,com.niklasarndt.matsebutler.modules.timetable,TimetableBuilder.new Pair() {...},15,0,0,0,3,0,3,0,3,0
+MatseButler,com.niklasarndt.matsebutler.modules.timetable,TimetableBuilder.new Pair() {...},20,0,0,0,3,0,3,0,3,0
+MatseButler,com.niklasarndt.matsebutler.modules.timetable,TimetableBuilder,306,8,20,0,44,2,22,1,9,1
+MatseButler,com.niklasarndt.matsebutler.modules.timetable,DateUtils,126,0,10,0,21,0,16,0,11,0
+MatseButler,com.niklasarndt.matsebutler.scheduler,ScheduleManager,21,237,6,14,4,48,6,22,0,18
+MatseButler,com.niklasarndt.matsebutler.scheduler,ScheduledTask,38,106,7,9,6,28,9,16,4,13
+MatseButler,com.niklasarndt.matsebutler.util,ButlerUtils,26,296,1,21,4,46,4,20,3,10
+MatseButler,com.niklasarndt.matsebutler.util,ResultBuilder,139,172,14,14,38,38,22,19,14,13
+MatseButler,com.niklasarndt.matsebutler.util,BuildInfo,10,67,3,5,5,16,3,2,0,1
+MatseButler,com.niklasarndt.matsebutler.util,ButlerUtils.new Pair() {...},0,15,0,0,0,3,0,3,0,3
+MatseButler,com.niklasarndt.matsebutler.util,ExecutionFlags,5,117,2,10,1,14,3,9,1,5
+MatseButler,com.niklasarndt.matsebutler.util,Emojis,5,58,1,5,1,15,2,7,1,5
+MatseButler,com.niklasarndt.matsebutler.config,Configuration,51,23,9,1,9,5,13,4,8,4
+MatseButler,com.niklasarndt.matsebutler.config,ConfigurationManager,32,44,1,1,7,13,1,4,0,4
+MatseButler,com.niklasarndt.matsebutler.modules,ButlerCommand,5,63,1,1,1,17,1,9,0,9
+MatseButler,com.niklasarndt.matsebutler.modules,ButlerCommandInformation,15,187,1,19,4,32,4,17,3,8
+MatseButler,com.niklasarndt.matsebutler.modules,ButlerModuleInformation,111,153,6,20,14,32,9,17,3,10
+MatseButler,com.niklasarndt.matsebutler.modules,ButlerModule,19,106,2,4,5,26,3,13,1,12
+MatseButler,com.niklasarndt.matsebutler.modules,ButlerContext,12,31,1,1,4,11,5,3,4,3
+MatseButler,com.niklasarndt.matsebutler,Butler,172,186,12,10,34,46,20,15,9,15
+MatseButler,com.niklasarndt.matsebutler,ModuleManager,57,281,7,13,11,59,7,26,2,21
+MatseButler,com.niklasarndt.matsebutler.modules.fun.command,DiceCommand,45,14,4,0,8,2,3,1,1,1
+MatseButler,com.niklasarndt.matsebutler.modules.fun.command,CoinCommand,18,11,2,0,3,2,2,1,1,1

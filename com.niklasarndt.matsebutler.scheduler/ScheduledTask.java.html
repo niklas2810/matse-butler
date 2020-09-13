@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ScheduledTask.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">MatseButler</a> &gt; <a href="index.source.html" class="el_package">com.niklasarndt.matsebutler.scheduler</a> &gt; <span class="el_source">ScheduledTask.java</span></div><h1>ScheduledTask.java</h1><pre class="source lang-java linenums">package com.niklasarndt.matsebutler.scheduler;
+
+import com.niklasarndt.matsebutler.util.ButlerUtils;
+
+/**
+ * Created by Niklas on 2020/08/02.
+ */
+public class ScheduledTask {
+
+<span class="fc" id="L10">    private final long start = System.currentTimeMillis();</span>
+
+    private final int id;
+    private final String name;
+    private final Runnable runnable;
+    private final long waitTimeInMs;
+<span class="fc" id="L16">    private boolean executed = false;</span>
+    private long executionTimestamp;
+<span class="fc" id="L18">    private boolean success = true;</span>
+
+
+    protected ScheduledTask(int id, Runnable runnable, long waitTimeInMs) {
+<span class="nc" id="L22">        this(id, &quot;Unnamed Task&quot;, runnable, waitTimeInMs);</span>
+<span class="nc" id="L23">    }</span>
+
+<span class="fc" id="L25">    protected ScheduledTask(int id, String name, Runnable runnable, long waitTimeInMs) {</span>
+<span class="fc" id="L26">        this.id = id;</span>
+<span class="fc" id="L27">        this.name = name;</span>
+<span class="fc" id="L28">        this.runnable = runnable;</span>
+<span class="fc" id="L29">        this.waitTimeInMs = waitTimeInMs;</span>
+<span class="fc" id="L30">    }</span>
+
+    public void execute() {
+<span class="fc" id="L33">        executed = true;</span>
+<span class="fc" id="L34">        executionTimestamp = System.currentTimeMillis();</span>
+        try {
+<span class="fc" id="L36">            runnable.run();</span>
+<span class="fc" id="L37">        } catch (Exception e) {</span>
+<span class="fc" id="L38">            success = false;</span>
+<span class="fc" id="L39">            throw e;</span>
+<span class="fc" id="L40">        }</span>
+<span class="fc" id="L41">    }</span>
+
+    public int getId() {
+<span class="fc" id="L44">        return id;</span>
+    }
+
+    public String getFancyIndex() {
+<span class="nc" id="L48">        return String.format(&quot;%02d&quot;, getId());</span>
+    }
+
+    public String getName() {
+<span class="fc" id="L52">        return name;</span>
+    }
+
+    public long getWaitTimeInMs() {
+<span class="fc" id="L56">        return waitTimeInMs;</span>
+    }
+
+    public boolean wasExecuted() {
+<span class="fc" id="L60">        return executed;</span>
+    }
+
+    public boolean wasSuccessfullyExecuted() {
+<span class="pc bpc" id="L64" title="1 of 4 branches missed.">        return wasExecuted() &amp;&amp; success;</span>
+    }
+
+    public boolean hasFailed() {
+<span class="fc bfc" id="L68" title="All 2 branches covered.">        return !success;</span>
+    }
+
+    public boolean shouldBeExecuted() {
+<span class="fc bfc" id="L72" title="All 2 branches covered.">        return getDueTimestamp() &lt; System.currentTimeMillis(); //Should already have been executed</span>
+    }
+
+    public long getDueTimestamp() {
+<span class="fc" id="L76">        return start + waitTimeInMs;</span>
+    }
+
+    public long getExecutionTimestamp() {
+<span class="nc bnc" id="L80" title="All 2 branches missed.">        return wasExecuted() ? executionTimestamp : -1;</span>
+    }
+
+    public long getTimeUntilExecution() {
+<span class="fc" id="L84">        return getDueTimestamp() - System.currentTimeMillis();</span>
+    }
+
+    public long getTimeSinceExecution() {
+<span class="pc bpc" id="L88" title="1 of 2 branches missed.">        return wasExecuted() ? System.currentTimeMillis() - executionTimestamp : 0;</span>
+    }
+
+    public String getFancyTimeUntilExecution() {
+<span class="pc bpc" id="L92" title="1 of 2 branches missed.">        return wasExecuted() ? &quot;Executed&quot; : ButlerUtils.prettyPrintTime(getTimeUntilExecution());</span>
+    }
+
+    public String getFancyTimeSinceExecution() {
+<span class="nc bnc" id="L96" title="All 2 branches missed.">        return wasExecuted() ? ButlerUtils.prettyPrintTime(getTimeSinceExecution()) :</span>
+<span class="nc" id="L97">                &quot;Not executed yet&quot;;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

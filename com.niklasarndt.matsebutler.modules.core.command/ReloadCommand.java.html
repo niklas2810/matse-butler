@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ReloadCommand.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">MatseButler</a> &gt; <a href="index.source.html" class="el_package">com.niklasarndt.matsebutler.modules.core.command</a> &gt; <span class="el_source">ReloadCommand.java</span></div><h1>ReloadCommand.java</h1><pre class="source lang-java linenums">package com.niklasarndt.matsebutler.modules.core.command;
+
+import com.niklasarndt.matsebutler.modules.ButlerCommand;
+import com.niklasarndt.matsebutler.modules.ButlerContext;
+
+/**
+ * Created by Niklas on 2020/09/12.
+ */
+public class ReloadCommand extends ButlerCommand {
+
+    public ReloadCommand() {
+<span class="fc" id="L12">        super(&quot;reload&quot;, &quot;Reloads the configuration&quot;, true);</span>
+<span class="fc" id="L13">    }</span>
+
+    @Override
+    public void execute(ButlerContext context) {
+<span class="nc" id="L17">        context.instance().getConfigManager().reload();</span>
+<span class="nc" id="L18">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

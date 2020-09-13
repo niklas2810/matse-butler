@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ButlerCommandInformation.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">MatseButler</a> &gt; <a href="index.source.html" class="el_package">com.niklasarndt.matsebutler.modules</a> &gt; <span class="el_source">ButlerCommandInformation.java</span></div><h1>ButlerCommandInformation.java</h1><pre class="source lang-java linenums">package com.niklasarndt.matsebutler.modules;
+
+import java.util.Objects;
+
+/**
+ * Created by Niklas on 2020/07/25.
+ */
+public class ButlerCommandInformation {
+
+    public static final int MAX_CMD_LENGTH = 16;
+    public static final int MAX_DESC_LENGTH = 512;
+
+    private final String name;
+    private final String[] aliases;
+    private final int argsMin;
+    private final int argsMax;
+    private final String description;
+    private final boolean privileged;
+
+    protected ButlerCommandInformation(String name, String description) {
+<span class="nc" id="L21">        this(name, 0, 0,</span>
+                description);
+<span class="nc" id="L23">    }</span>
+
+    protected ButlerCommandInformation(String name, int argsMin, int argsMax,
+                                       String description) {
+<span class="fc" id="L27">        this(name, new String[0], argsMin, argsMax, description, false);</span>
+<span class="fc" id="L28">    }</span>
+
+    protected ButlerCommandInformation(String name, String[] aliases,
+                                       int argsMin, int argsMax, String description,
+<span class="fc" id="L32">                                       boolean privileged) {</span>
+<span class="fc" id="L33">        Objects.requireNonNull(name);</span>
+
+<span class="fc" id="L35">        this.name = name;</span>
+<span class="pc bpc" id="L36" title="1 of 2 branches missed.">        this.aliases = aliases != null ? aliases : new String[0];</span>
+<span class="fc" id="L37">        this.argsMin = argsMin;</span>
+<span class="fc" id="L38">        this.argsMax = argsMax;</span>
+<span class="fc bfc" id="L39" title="All 2 branches covered.">        this.description = description != null ? description : &quot;n/a&quot;;</span>
+<span class="fc" id="L40">        this.privileged = privileged;</span>
+
+<span class="fc" id="L42">        applyLimits();</span>
+<span class="fc" id="L43">    }</span>
+
+    private void applyLimits() {
+<span class="fc bfc" id="L46" title="All 4 branches covered.">        if (this.name.length() == 0 || this.description.length() == 0) {</span>
+<span class="fc" id="L47">            throw new IllegalArgumentException(&quot;Both your command name and description &quot; +</span>
+                    &quot;must not be empty.&quot;);
+        }
+<span class="fc bfc" id="L50" title="All 2 branches covered.">        if (this.name.length() &gt; MAX_CMD_LENGTH) {</span>
+<span class="fc" id="L51">            throw new IllegalArgumentException(String.format(</span>
+                    &quot;The module name '%s' is too long (max: %d characters, given: %d characters).&quot;,
+<span class="fc" id="L53">                    name, MAX_CMD_LENGTH, this.name.length()));</span>
+        }
+<span class="fc bfc" id="L55" title="All 4 branches covered.">        if (argsMin &lt; 0 || argsMax &lt; argsMin) {</span>
+<span class="fc" id="L56">            throw new IllegalArgumentException(</span>
+<span class="fc" id="L57">                    String.format(&quot;Invalid argument limits for command \&quot;%s\&quot;. (min: %d, max: %d)&quot;,</span>
+<span class="fc" id="L58">                            name, argsMin, argsMax));</span>
+        }
+<span class="fc bfc" id="L60" title="All 2 branches covered.">        if (this.description.length() &gt; MAX_DESC_LENGTH) {</span>
+<span class="fc" id="L61">            throw new IllegalArgumentException(String.format(</span>
+                    &quot;The description for the command '%s' is too long (max: %d characters, &quot; +
+                            &quot;given: %d characters).&quot;,
+<span class="fc" id="L64">                    name, MAX_DESC_LENGTH, this.description.length()));</span>
+        }
+<span class="fc" id="L66">    }</span>
+
+    public String getName() {
+<span class="fc" id="L69">        return name;</span>
+    }
+
+    public String[] getAliases() {
+<span class="nc" id="L73">        return aliases;</span>
+    }
+
+    public int getArgsMin() {
+<span class="fc" id="L77">        return argsMin;</span>
+    }
+
+    public int getArgsMax() {
+<span class="fc" id="L81">        return argsMax;</span>
+    }
+
+    public String getDescription() {
+<span class="fc" id="L85">        return description;</span>
+    }
+
+    public boolean requiresPrivileges() {
+<span class="nc" id="L89">        return privileged;</span>
+    }
+
+    public boolean hasAlias(String name) {
+<span class="fc bfc" id="L93" title="All 2 branches covered.">        for (String al : aliases) {</span>
+<span class="fc bfc" id="L94" title="All 2 branches covered.">            if (al.equals(name)) return true;</span>
+        }
+<span class="fc" id="L96">        return false;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

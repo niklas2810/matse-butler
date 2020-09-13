@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TimetableModule.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">MatseButler</a> &gt; <a href="index.source.html" class="el_package">com.niklasarndt.matsebutler.modules.timetable</a> &gt; <span class="el_source">TimetableModule.java</span></div><h1>TimetableModule.java</h1><pre class="source lang-java linenums">package com.niklasarndt.matsebutler.modules.timetable;
+
+import com.niklasarndt.matsebutler.Butler;
+import com.niklasarndt.matsebutler.modules.ButlerModule;
+import com.niklasarndt.matsebutler.threads.TimetableThread;
+import com.niklasarndt.matsebutler.util.Emojis;
+
+public class TimetableModule extends ButlerModule {
+
+    private static TimetableModule instance;
+    private final TimetableThread updater;
+
+
+    public TimetableModule() {
+<span class="fc" id="L15">        super(Emojis.HOURGLASS, &quot;timetable&quot;, &quot;Stundenplan&quot;,</span>
+                &quot;Zeigt den Stundenplan an.&quot;, &quot;1.0&quot;);
+<span class="fc" id="L17">        instance = this;</span>
+
+<span class="fc" id="L19">        this.updater = new TimetableThread(this);</span>
+<span class="fc" id="L20">        updater.start();</span>
+<span class="fc" id="L21">    }</span>
+
+    public static TimetableModule instance() {
+<span class="nc" id="L24">        return instance;</span>
+    }
+
+    public TimetableThread getUpdater() {
+<span class="nc" id="L28">        return updater;</span>
+    }
+
+    public Butler getButler() {
+<span class="nc" id="L32">        return butler;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

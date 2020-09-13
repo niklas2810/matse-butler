@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TimetableCommand.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">MatseButler</a> &gt; <a href="index.source.html" class="el_package">com.niklasarndt.matsebutler.modules.timetable.command</a> &gt; <span class="el_source">TimetableCommand.java</span></div><h1>TimetableCommand.java</h1><pre class="source lang-java linenums">package com.niklasarndt.matsebutler.modules.timetable.command;
+
+import com.niklasarndt.matsebutler.modules.ButlerCommand;
+import com.niklasarndt.matsebutler.modules.ButlerContext;
+import com.niklasarndt.matsebutler.modules.timetable.TimetableModule;
+import com.niklasarndt.matsebutler.threads.TimetableThread;
+import com.niklasarndt.matsebutler.util.ButlerUtils;
+
+public class TimetableCommand extends ButlerCommand {
+
+
+    public TimetableCommand() {
+<span class="fc" id="L13">        super(&quot;timetable&quot;, 0, 2, &quot;Updates the timetable.&quot;,</span>
+                false);
+<span class="fc" id="L15">    }</span>
+
+    @Override
+    public void execute(ButlerContext context) {
+<span class="nc" id="L19">        TimetableThread updater = TimetableModule.instance().getUpdater();</span>
+<span class="nc bnc" id="L20" title="All 2 branches missed.">        if (context.args().length == 0</span>
+<span class="nc bnc" id="L21" title="All 2 branches missed.">                || context.args()[0].equalsIgnoreCase(&quot;status&quot;)) {</span>
+
+<span class="nc bnc" id="L23" title="All 2 branches missed.">            if (!updater.isRunning()) {</span>
+<span class="nc" id="L24">                context.resultBuilder().success(&quot;The auto-updater is currently disabled.&quot;);</span>
+            } else {
+<span class="nc" id="L26">                context.resultBuilder().success(&quot;The auto-updater ran %s ago.&quot;,</span>
+<span class="nc" id="L27">                        ButlerUtils.prettyPrintTime(</span>
+<span class="nc" id="L28">                                System.currentTimeMillis() - updater.lastExecutionTimestamp()));</span>
+            }
+
+<span class="nc" id="L31">            return;</span>
+<span class="nc bnc" id="L32" title="All 2 branches missed.">        } else if (context.args()[0].equalsIgnoreCase(&quot;start&quot;)) {</span>
+<span class="nc bnc" id="L33" title="All 2 branches missed.">            if (!context.instance().isAdmin(context.message().getAuthor().getIdLong())) {</span>
+<span class="nc" id="L34">                context.resultBuilder().denyAccess();</span>
+<span class="nc" id="L35">                return;</span>
+            }
+
+<span class="nc" id="L38">            updater.start();</span>
+<span class="nc" id="L39">            context.resultBuilder().success(&quot;The auto-updater has just been started.&quot;);</span>
+<span class="nc" id="L40">            return;</span>
+<span class="nc bnc" id="L41" title="All 2 branches missed.">        } else if (context.args()[0].equalsIgnoreCase(&quot;stop&quot;)) {</span>
+<span class="nc bnc" id="L42" title="All 2 branches missed.">            if (!context.instance().isAdmin(context.message().getAuthor().getIdLong())) {</span>
+<span class="nc" id="L43">                context.resultBuilder().denyAccess();</span>
+<span class="nc" id="L44">                return;</span>
+            }
+<span class="nc" id="L46">            updater.stop();</span>
+<span class="nc" id="L47">            context.resultBuilder().success(&quot;The auto-updater has been stopped.&quot;);</span>
+<span class="nc" id="L48">            return;</span>
+<span class="nc bnc" id="L49" title="All 2 branches missed.">        } else if (context.args()[0].equalsIgnoreCase(&quot;update&quot;)) {</span>
+<span class="nc bnc" id="L50" title="All 2 branches missed.">            if (!context.instance().isAdmin(context.message().getAuthor().getIdLong())) {</span>
+<span class="nc" id="L51">                context.resultBuilder().denyAccess();</span>
+<span class="nc" id="L52">                return;</span>
+            }
+
+<span class="nc bnc" id="L55" title="All 2 branches missed.">            if (context.args().length == 1 ||</span>
+<span class="nc bnc" id="L56" title="All 2 branches missed.">                    context.args()[1].equalsIgnoreCase(&quot;all&quot;)) {</span>
+<span class="nc" id="L57">                updater.updateChannels(context.resultBuilder(),</span>
+                        true, true, true);
+<span class="nc" id="L59">                return;</span>
+<span class="nc bnc" id="L60" title="All 2 branches missed.">            } else if (context.args()[1].equalsIgnoreCase(&quot;today&quot;)) {</span>
+<span class="nc" id="L61">                updater.updateChannels(context.resultBuilder(),</span>
+                        true, false, true);
+<span class="nc" id="L63">                return;</span>
+<span class="nc bnc" id="L64" title="All 2 branches missed.">            } else if (context.args()[1].equalsIgnoreCase(&quot;weekly&quot;)) {</span>
+<span class="nc" id="L65">                updater.updateChannels(context.resultBuilder(),</span>
+                        false, true, true);
+<span class="nc" id="L67">                return;</span>
+            }
+        }
+
+
+<span class="nc" id="L72">        context.resultBuilder()</span>
+<span class="nc" id="L73">                .notFound(&quot;Please use `timetable (status|start|stop)` or &quot; +</span>
+                        &quot;`timetable update (all|today|weekly)` (Admins only!)&quot;);
+<span class="nc" id="L75">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

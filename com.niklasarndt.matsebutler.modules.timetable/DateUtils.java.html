@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DateUtils.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">MatseButler</a> &gt; <a href="index.source.html" class="el_package">com.niklasarndt.matsebutler.modules.timetable</a> &gt; <span class="el_source">DateUtils.java</span></div><h1>DateUtils.java</h1><pre class="source lang-java linenums">package com.niklasarndt.matsebutler.modules.timetable;
+
+import net.dv8tion.jda.internal.utils.tuple.Pair;
+import java.time.LocalDate;
+import java.time.LocalTime;
+
+<span class="nc" id="L7">public class DateUtils {</span>
+
+    public static String getDay(LocalDate d) {
+<span class="nc" id="L10">        return String.format(&quot;%d-%d-%d&quot;, d.getYear(), d.getMonth().getValue(), d.getDayOfMonth());</span>
+    }
+
+    public static String getDayRequest(LocalDate day) {
+<span class="nc" id="L14">        return getRequest(day, day);</span>
+    }
+
+    public static String getRequest(Pair&lt;LocalDate, LocalDate&gt; span) {
+<span class="nc" id="L18">        return getRequest(span.getLeft(), span.getRight());</span>
+    }
+
+    public static String getRequest(LocalDate start, LocalDate end) {
+<span class="nc" id="L22">        return &quot;https://www.matse.itc.rwth-aachen.de/stundenplan/web/eventFeed/1?&quot; +</span>
+<span class="nc" id="L23">                getParamsFor(start, end);</span>
+    }
+
+
+    public static LocalDate getCurrentDay() {
+<span class="nc" id="L28">        LocalDate d = LocalDate.now();</span>
+
+        //If past 6PM, select the next day.
+<span class="nc bnc" id="L31" title="All 2 branches missed.">        if (LocalTime.now().getHour() &gt; 17) d = d.plusDays(1);</span>
+
+        //If past Friday, select the next Monday.
+<span class="nc bnc" id="L34" title="All 2 branches missed.">        if (d.getDayOfWeek().ordinal() &gt; 4) {</span>
+<span class="nc" id="L35">            return getCurrentWeek().getLeft();</span>
+        }
+
+<span class="nc" id="L38">        return d;</span>
+    }
+
+    public static Pair&lt;LocalDate, LocalDate&gt; getCurrentWeek() { //Mo-Fr
+<span class="nc" id="L42">        LocalDate d = LocalDate.now();</span>
+        //If past Friday or Friday past 6PM, select the next week.
+<span class="nc bnc" id="L44" title="All 2 branches missed.">        if (d.getDayOfWeek().ordinal() &gt; 4 ||</span>
+<span class="nc bnc" id="L45" title="All 4 branches missed.">                (d.getDayOfWeek().ordinal() == 4 &amp;&amp; LocalTime.now().getHour() &gt; 17)) {</span>
+<span class="nc" id="L46">            d = d.plusDays(d.getDayOfWeek().ordinal());</span>
+        }
+
+<span class="nc" id="L49">        final LocalDate finalDate = d;</span>
+
+<span class="nc" id="L51">        return new Pair&lt;&gt;() {</span>
+            @Override
+            public LocalDate getLeft() {
+<span class="nc" id="L54">                return finalDate.minusDays(finalDate.getDayOfWeek().ordinal());</span>
+            }
+
+            @Override
+            public LocalDate getRight() {
+<span class="nc" id="L59">                return finalDate.minusDays(finalDate.getDayOfWeek().ordinal() - 4);</span>
+            }
+        };
+    }
+
+    private static String getParamsFor(LocalDate startAndEnd) {
+<span class="nc" id="L65">        return getParamsFor(startAndEnd, startAndEnd);</span>
+    }
+
+    private static String getParamsFor(Pair&lt;LocalDate, LocalDate&gt; span) {
+<span class="nc" id="L69">        return getParamsFor(span.getLeft(), span.getRight());</span>
+    }
+
+    public static String getParamsFor(LocalDate start, LocalDate end) {
+<span class="nc" id="L73">        return getParamsFor(getDay(start), getDay(end));</span>
+    }
+
+    public static String getParamsFor(String start, String end) {
+<span class="nc" id="L77">        return String.format(&quot;start=%s&amp;end=%s&quot;, start, end);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>
