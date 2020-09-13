@@ -56,13 +56,12 @@ public class TimetableCommand extends ButlerCommand {
                         true, true, true);
                 return;
             } else if (context.args()[1].equalsIgnoreCase("today")) {
-
                 TimetableModule.instance().updateChannels(context.resultBuilder(),
-                        true, true, true);
+                        true, false, true);
                 return;
             } else if (context.args()[1].equalsIgnoreCase("weekly")) {
                 TimetableModule.instance().updateChannels(context.resultBuilder(),
-                        true, true, true);
+                        false, true, true);
                 return;
             }
         }
