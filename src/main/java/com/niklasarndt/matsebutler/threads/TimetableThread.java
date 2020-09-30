@@ -13,6 +13,7 @@ import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.internal.utils.tuple.Pair;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -89,6 +90,7 @@ public class TimetableThread extends RepeatingThreadScheme {
                              LocalDate start, LocalDate end,
                              Guild g, String channelName,
                              ResultBuilder result) {
+
         Pair<Integer, List<EmbedBuilder>> res = builder.buildTimetable(butler,
                 start, end, ignoreCache ? 0 : hash.get());
 
@@ -127,6 +129,14 @@ public class TimetableThread extends RepeatingThreadScheme {
                 }
             }
 
+            if (res.getRight().stream()
+                    .filter(i -> i.getFields().size() == 1 &&
+                            i.getFields().get(0).getValue().equals(TimetableBuilder.NO_LESSONS))
+                    .count() == res.getRight().size()) { //All lessons are empty
+                logger.info("Sending no timetable entries as there are no lessons scheduled yet.");
+                out.sendMessage(TimetableBuilder.NO_LESSONS).queue();
+                return;
+            }
             out.sendMessage("Here are the latest updates! " + role).queue();
             res.getRight().forEach(embed ->
                     out.sendMessage(embed.build()).queue());
