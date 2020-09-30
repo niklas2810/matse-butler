@@ -65,7 +65,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: app.jar
-          path: ./target/app-shaded.jar
+          path: ./app.jar
 
       - name: 💽 Restore Docker cache
         uses: actions/cache@v2
