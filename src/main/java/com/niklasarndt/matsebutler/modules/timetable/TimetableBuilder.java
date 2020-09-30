@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.internal.utils.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.net.URL;
 import java.time.DayOfWeek;
@@ -23,6 +24,7 @@ import java.util.List;
  */
 public class TimetableBuilder {
 
+    public static final String NO_LESSONS = "Für diesen Zeitraum sind keine Veranstaltungen angesetzt.";
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public Pair<Integer, List<EmbedBuilder>> buildTimetable(Butler butler, LocalDate start,
@@ -64,7 +66,8 @@ public class TimetableBuilder {
                     .forEach(item -> embeds.get(embeds.size() - 1).addField(buildField(item)));
             if (embeds.get(embeds.size() - 1).getFields().size() == 0) {
                 embeds.get(embeds.size() - 1).addField("",
-                        "Für diesen Zeitraum sind keine Stunden angesetzt.", false);
+                        NO_LESSONS,
+                        false);
             }
         });
 
