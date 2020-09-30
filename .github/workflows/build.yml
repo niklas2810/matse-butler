@@ -43,8 +43,8 @@ jobs:
       - name: 🚀 Upload JAR
         uses: actions/upload-artifact@v2
         with:
-          name: app.jar
-          path: ./target/*-shaded.jar
+          name: jar-files
+          path: ./target/*.jar
 
       - name: 🚀 Upload test coverage
         uses: actions/upload-artifact@v2
@@ -64,8 +64,8 @@ jobs:
       - name: ⏬ Download pre-built .jar
         uses: actions/download-artifact@v2
         with:
-          name: app.jar
-          path: ./app.jar
+          name: jar-files
+          path: ./jars
 
       - name: 💽 Restore Docker cache
         uses: actions/cache@v2
