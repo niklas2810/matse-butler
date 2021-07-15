@@ -20,10 +20,10 @@ MatseButler,com.niklasarndt.matsebutler.modules.timetable,TimetableBuilder.new P
 MatseButler,com.niklasarndt.matsebutler.modules.timetable,TimetableBuilder.new Pair() {...},20,0,0,0,3,0,3,0,3,0
 MatseButler,com.niklasarndt.matsebutler.modules.timetable,TimetableBuilder,306,8,20,0,44,2,22,1,9,1
 MatseButler,com.niklasarndt.matsebutler.modules.timetable,DateUtils,126,0,10,0,21,0,16,0,11,0
-MatseButler,com.niklasarndt.matsebutler.scheduler,ScheduleManager,21,237,6,14,4,48,6,22,0,18
+MatseButler,com.niklasarndt.matsebutler.scheduler,ScheduleManager,21,234,6,14,4,47,6,22,0,18
 MatseButler,com.niklasarndt.matsebutler.scheduler,ScheduledTask,38,106,7,9,6,28,9,16,4,13
-MatseButler,com.niklasarndt.matsebutler.util,ButlerUtils,26,296,1,21,4,46,4,20,3,10
-MatseButler,com.niklasarndt.matsebutler.util,ResultBuilder,139,172,14,14,38,38,22,19,14,13
+MatseButler,com.niklasarndt.matsebutler.util,ButlerUtils,26,299,1,21,4,46,4,20,3,10
+MatseButler,com.niklasarndt.matsebutler.util,ResultBuilder,141,172,14,14,38,38,22,19,14,13
 MatseButler,com.niklasarndt.matsebutler.util,BuildInfo,10,67,3,5,5,16,3,2,0,1
 MatseButler,com.niklasarndt.matsebutler.util,ButlerUtils.new Pair() {...},0,15,0,0,0,3,0,3,0,3
 MatseButler,com.niklasarndt.matsebutler.util,ExecutionFlags,5,117,2,10,1,14,3,9,1,5
@@ -35,7 +35,7 @@ MatseButler,com.niklasarndt.matsebutler.modules,ButlerCommandInformation,15,187,
 MatseButler,com.niklasarndt.matsebutler.modules,ButlerModuleInformation,111,153,6,20,14,32,9,17,3,10
 MatseButler,com.niklasarndt.matsebutler.modules,ButlerModule,19,106,2,4,5,26,3,13,1,12
 MatseButler,com.niklasarndt.matsebutler.modules,ButlerContext,12,31,1,1,4,11,5,3,4,3
-MatseButler,com.niklasarndt.matsebutler,Butler,172,186,12,10,34,46,20,15,9,15
+MatseButler,com.niklasarndt.matsebutler,Butler,172,185,12,10,34,46,20,15,9,15
 MatseButler,com.niklasarndt.matsebutler,ModuleManager,57,281,7,13,11,59,7,26,2,21
 MatseButler,com.niklasarndt.matsebutler.modules.fun.command,DiceCommand,45,14,4,0,8,2,3,1,1,1
 MatseButler,com.niklasarndt.matsebutler.modules.fun.command,CoinCommand,18,11,2,0,3,2,2,1,1,1

@@ -32,7 +32,7 @@ public class Butler {
     private JDA jda;
     private ModuleManager moduleManager;
     private ScheduleManager scheduleManager;
-    private ConfigurationManager configManager;
+    private final ConfigurationManager configManager;
 
     protected Butler() throws LoginException {
 <span class="nc" id="L38">        this(ExecutionFlags.NONE);</span>
@@ -50,7 +50,7 @@ public class Butler {
 
 <span class="fc" id="L51">    protected Butler(ExecutionFlags... flags) throws LoginException {</span>
 <span class="fc" id="L52">        logger.info(&quot;Startup is in progress&quot;);</span>
-<span class="fc" id="L53">        this.flags = Collections.unmodifiableList(List.of(flags));</span>
+<span class="fc" id="L53">        this.flags = List.of(flags);</span>
 <span class="fc" id="L54">        this.configManager = new ConfigurationManager();</span>
 
 <span class="pc bpc" id="L56" title="1 of 2 branches missed.">        if (configManager.getConfig().getSentryKey() != null) {</span>

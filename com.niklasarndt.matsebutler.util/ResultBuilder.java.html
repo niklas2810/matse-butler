@@ -91,7 +91,7 @@ public class ResultBuilder {
 <span class="nc" id="L91">                        String.format(&quot;The produced result is too long to be sent &quot; +</span>
                                         &quot;(length: %s, max allowed: %s).&quot;,
 <span class="nc" id="L93">                                result.getLength(), MessageEmbed.EMBED_MAX_LENGTH_BOT));</span>
-<span class="nc" id="L94">            } else action = channel.sendMessage(produceEmbed());</span>
+<span class="nc" id="L94">            } else action = channel.sendMessageEmbeds(produceEmbed());</span>
 <span class="nc" id="L95">        } else action = channel.sendMessage(produceString());</span>
 
         //Deletion hint
