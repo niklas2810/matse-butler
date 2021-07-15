@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
  */
 class ButlerModuleInformationTest extends ButlerTest {
 
-    private ButlerModuleInformation shortInfo = new ButlerModuleInformation("test",
+    private final ButlerModuleInformation shortInfo = new ButlerModuleInformation("test",
             "test module");
 
     @Test

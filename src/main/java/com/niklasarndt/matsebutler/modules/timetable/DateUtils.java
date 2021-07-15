@@ -19,7 +19,7 @@ public class DateUtils {
     }
 
     public static String getRequest(LocalDate start, LocalDate end) {
-        return "https://www.matse.itc.rwth-aachen.de/stundenplan/web/eventFeed/1?" +
+        return "https://www.matse.itc.rwth-aachen.de/stundenplan/web/eventFeed/2?" +
                 getParamsFor(start, end);
     }
 

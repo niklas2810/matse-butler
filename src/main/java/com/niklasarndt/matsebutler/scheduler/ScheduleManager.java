@@ -32,13 +32,11 @@ public class ScheduleManager {
     private final ScheduledExecutorService executorService = Executors
             .newScheduledThreadPool(1, runnable -> new Thread(null, runnable,
                     "ScheduleThread-" + System.currentTimeMillis()));
-    private final Butler butler;
     private final List<ScheduledTask> failedTasks = new ArrayList<>();
     private final AtomicInteger index = new AtomicInteger();
     private List<ScheduledTask> tasks = new ArrayList<>();
 
     public ScheduleManager(Butler butler) {
-        this.butler = butler;
     }
 
     private ScheduledTask schedule(ScheduledTask task) {
@@ -62,27 +60,6 @@ public class ScheduleManager {
         return schedule(new ScheduledTask(index.incrementAndGet(), name, runnable, waitTimeInMs));
     }
 
-    /*
-    public void scheduleMessage(String message, long waitTimeInMs) {
-        schedule(MESSAGE_REMINDER_NAME, () -> {
-            String duration = ButlerUtils.prettyPrintTime(waitTimeInMs);
-
-            String intro = String.format("Hey there %s Here's what you " +
-                            "asked me to **remind** you of **%s ago**!", Emojis.WAVE,
-                    duration);
-
-            MessageEmbed embed = new EmbedBuilder()
-                    .addField("Your Reminder", message, false)
-                    .setFooter(String.format("Requested %s ago", duration)).build();
-
-            butler.getJda().retrieveUserById(butler.getOwnerId())
-                    .flatMap(User::openPrivateChannel)
-                    .flatMap(channel -> channel.sendMessage(intro).embed(embed))
-                    .flatMap(sent -> sent.addReaction(Emojis.HOURGLASS))
-                    .queue();
-        }, waitTimeInMs);
-    }
-*/
     public void shutdown() {
         executorService.shutdown();
         try {

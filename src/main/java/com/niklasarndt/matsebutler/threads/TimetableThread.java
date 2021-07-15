@@ -139,7 +139,7 @@ public class TimetableThread extends RepeatingThreadScheme {
             }
             out.sendMessage("Here are the latest updates! " + role).queue();
             res.getRight().forEach(embed ->
-                    out.sendMessage(embed.build()).queue());
+                    out.sendMessageEmbeds(embed.build()).queue());
             logger.info("Sending {} messages.", res.getRight().size());
         }
     }

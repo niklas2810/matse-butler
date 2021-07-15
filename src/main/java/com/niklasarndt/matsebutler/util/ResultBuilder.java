@@ -91,7 +91,7 @@ public class ResultBuilder {
                         String.format("The produced result is too long to be sent " +
                                         "(length: %s, max allowed: %s).",
                                 result.getLength(), MessageEmbed.EMBED_MAX_LENGTH_BOT));
-            } else action = channel.sendMessage(produceEmbed());
+            } else action = channel.sendMessageEmbeds(produceEmbed());
         } else action = channel.sendMessage(produceString());
 
         //Deletion hint

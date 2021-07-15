@@ -32,7 +32,7 @@ public class Butler {
     private JDA jda;
     private ModuleManager moduleManager;
     private ScheduleManager scheduleManager;
-    private ConfigurationManager configManager;
+    private final ConfigurationManager configManager;
 
     protected Butler() throws LoginException {
         this(ExecutionFlags.NONE);
@@ -50,7 +50,7 @@ public class Butler {
 
     protected Butler(ExecutionFlags... flags) throws LoginException {
         logger.info("Startup is in progress");
-        this.flags = Collections.unmodifiableList(List.of(flags));
+        this.flags = List.of(flags);
         this.configManager = new ConfigurationManager();
 
         if (configManager.getConfig().getSentryKey() != null) {

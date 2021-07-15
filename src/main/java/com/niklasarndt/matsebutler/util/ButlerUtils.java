@@ -63,7 +63,7 @@ public class ButlerUtils {
             values[i] = out.getRight();
         }
 
-        return ((((values[0] * 24) + values[1]) * 60 + values[2]) * 60 + values[3]) * 1000;
+        return ((((values[0] * 24L) + values[1]) * 60 + values[2]) * 60 + values[3]) * 1000;
     }
 
     private static Pair<String, Integer> parseAndEdit(String input, String letter) {

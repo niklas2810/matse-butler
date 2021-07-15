@@ -83,14 +83,6 @@ public class ReactionListener extends ListenerAdapter {
                 .flatMap(message -> runProcessingChecks(message, emoji),
                         message -> {
                             logger.debug("Executing reaction processing");
-
-                            /*if (emoji.equals(Emojis.WASTEBASKET)) {
-                                return performDeleteAction(channel, message);
-                            } else if (emoji.equals(Emojis.HOURGLASS)) {
-                                return performSnoozeAction(message);
-                            } else {
-
-                            }*/
                             throw new IllegalStateException("Unexpected value: " + emoji);
                         }).queue();
     }
@@ -107,53 +99,7 @@ public class ReactionListener extends ListenerAdapter {
             logger.debug("User removed reaction");
             return false;
         }
-/*
-        if (emoji.equals(Emojis.HOURGLASS)) {
-            if (message.getEmbeds().size() != 1) {
-                logger.debug("This message does not contain an embed.");
-                return false;
-            }
-            if (message.getEmbeds().get(0).getFields()
-                    .stream().noneMatch(field -> Objects.equals(field.getName(),
-                            "Your Reminder"))) {
-                logger.debug("There is no reminder field in this embed.");
-                return false;
-            }
-        }*/
         return true;
 
     }
-/*
-
-
-    private RestAction<Void> performDeleteAction(MessageChannel channel, Message message) {
-        if (channel instanceof GuildChannel) { //Try to delete original message
-            return channel.getHistoryBefore(message.getIdLong(), 1)
-                    .delay(100, TimeUnit.MILLISECONDS)
-                    .flatMap(history -> {
-
-                        long distanceInSeconds = history.isEmpty() ? 0 :
-                                Math.abs(history.getRetrievedHistory().get(0)
-                                        .getTimeCreated().toEpochSecond() -
-                                        message.getTimeCreated().toEpochSecond());
-
-                        if (history.isEmpty()) {
-                            logger.debug("Did not retrieve any previous messages");
-                        } else if (history.getRetrievedHistory().get(0).getAuthor().getIdLong()
-                                != butler.getOwnerId()) {
-                            logger.debug("Author of previous message is not the bot owner");
-                        } else if (distanceInSeconds > 5) {
-                            logger.debug("Time between bot message and original message " +
-                                    "is too large ({}s)", distanceInSeconds);
-                        } else {
-                            return channel.deleteMessageById(
-                                    history.getRetrievedHistory().get(0).getId())
-                                    .flatMap(empty -> message.delete());
-                        }
-
-                        return message.delete();
-                    });
-        } else return message.delete();
-    }
-*/
 }
