@@ -10,7 +10,7 @@ MatseButler,com.niklasarndt.matsebutler.modules.core.command,VersionCommand,116,
 MatseButler,com.niklasarndt.matsebutler.modules.core.command,RestartCommand,9,8,0,0,3,2,1,1,1,1
 MatseButler,com.niklasarndt.matsebutler.modules.core.command,ReloadCommand,5,8,0,0,2,2,1,1,1,1
 MatseButler,com.niklasarndt.matsebutler.modules.core.command,ShutdownCommand,9,16,0,0,3,2,1,1,1,1
-MatseButler,com.niklasarndt.matsebutler.modules.timetable.model,TimetableEntry,202,0,18,0,44,0,24,0,15,0
+MatseButler,com.niklasarndt.matsebutler.modules.timetable.model,TimetableEntry,207,0,20,0,44,0,25,0,15,0
 MatseButler,com.niklasarndt.matsebutler.modules.timetable.model,Location,15,0,0,0,5,0,5,0,5,0
 MatseButler,com.niklasarndt.matsebutler.modules.timetable.model,Lecturer,9,0,0,0,3,0,3,0,3,0
 MatseButler,com.niklasarndt.matsebutler.modules.fun,FunModule,0,8,0,0,0,2,0,1,0,1

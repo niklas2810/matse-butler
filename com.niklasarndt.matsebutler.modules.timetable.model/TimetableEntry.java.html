@@ -105,7 +105,7 @@ import java.util.Objects;
     public String getInformation() {
 <span class="nc bnc" id="L106" title="All 2 branches missed.">        if (infoParsed != null) return infoParsed;</span>
 
-<span class="nc" id="L108">        infoParsed = information.replace(&quot;&lt;br /&gt;&quot;, &quot;\n&quot;).trim();</span>
+<span class="nc bnc" id="L108" title="All 2 branches missed.">        infoParsed = information != null ? information.replace(&quot;&lt;br /&gt;&quot;, &quot;\n&quot;).trim() : &quot;&quot;;</span>
 <span class="nc" id="L109">        return infoParsed;</span>
     }
 
