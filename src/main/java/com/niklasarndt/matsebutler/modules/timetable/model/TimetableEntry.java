@@ -105,7 +105,7 @@ public class TimetableEntry {
     public String getInformation() {
         if (infoParsed != null) return infoParsed;
 
-        infoParsed = information.replace("<br />", "\n").trim();
+        infoParsed = information != null ? information.replace("<br />", "\n").trim() : "";
         return infoParsed;
     }
 
