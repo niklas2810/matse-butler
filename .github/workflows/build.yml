@@ -41,13 +41,13 @@ jobs:
         run: mvn clean package
 
       - name: 🚀 Upload JAR
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: jar-files
           path: ./target/*.jar
 
       - name: 🚀 Upload test coverage
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: coverage-report.zip
           path: ./target/site/jacoco
